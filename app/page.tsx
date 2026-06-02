@@ -1,169 +1,467 @@
-import React from 'react';
+"use client"
 
-export default function Home() {
-  return (
-    <main style={styles.container}>
-      <div style={styles.hero}>
-        <div style={styles.badge}>Next.js Boilerplate CLI 🚀</div>
-        <h1 style={styles.title}>
-          Your Premium SaaS Stack <span style={styles.gradient}>Is Ready</span>
-        </h1>
-        <p style={styles.subtitle}>
-          Congratulations! Your customized Next.js boilerplate has been successfully scaffolded with all your selected databases, components, and authentication configurations.
-        </p>
-        
-        <div style={styles.ctaGroup}>
-          <a href="https://nextjs.org/docs" target="_blank" rel="noopener noreferrer" style={styles.primaryCta}>
-            Read Next.js Docs
-          </a>
-          <a href="#features" style={styles.secondaryCta}>
-            Explore Stack Files
-          </a>
-        </div>
-      </div>
+import {
+  Bot,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  ClipboardList,
+  FileText,
+  LayoutDashboard,
+  Library,
+  PenTool,
+  Search,
+  Settings,
+  Sparkles,
+  UsersRound,
+  WandSparkles,
+} from "lucide-react"
+import * as React from "react"
 
-      <section id="features" style={styles.grid}>
-        <div style={styles.card}>
-          <div style={styles.icon}>⚡</div>
-          <h3 style={styles.cardTitle}>App Router Ready</h3>
-          <p style={styles.cardText}>Built using modern Next.js 15 App Router with full Server Components and safe SEO presets.</p>
-        </div>
-        
-        <div style={styles.card}>
-          <div style={styles.icon}>🔒</div>
-          <h3 style={styles.cardTitle}>Modular Auth</h3>
-          <p style={styles.cardText}>Pre-configured middleware rules and pages for secure, lightning-fast session validation.</p>
-        </div>
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
-        <div style={styles.card}>
-          <div style={styles.icon}>🗄️</div>
-          <h3 style={styles.cardTitle}>Database Integration</h3>
-          <p style={styles.cardText}>Configured connections, client instances, schemas, and live migration configurations.</p>
-        </div>
-      </section>
-
-      <footer style={styles.footer}>
-        Created with <span style={{ color: '#ec4899' }}>♥</span> by{' '}
-        <a
-          href="https://www.youtube.com/@tubeguruji"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ color: '#71717a', textDecoration: 'underline', transition: 'color 0.2s' }}
-        >
-          Tubeguruji
-        </a>
-      </footer>
-    </main>
-  );
+type MenuItem = {
+  label: string
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
+  color: string
+  active?: boolean
 }
 
-const styles: Record<string, React.CSSProperties> = {
-  container: {
-    minHeight: '100vh',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#09090b',
-    color: '#fafafa',
-    fontFamily: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif",
-    padding: '2rem',
-    boxSizing: 'border-box',
+type MenuGroup = {
+  label: string
+  items: MenuItem[]
+}
+
+const menuGroups: MenuGroup[] = [
+  {
+    label: "Workspace",
+    items: [
+      {
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        color: "text-indigo-400",
+        active: true,
+      },
+      { label: "AI Assistant", icon: Bot, color: "text-purple-400" },
+      { label: "Calendar", icon: CalendarDays, color: "text-blue-400" },
+      { label: "Task / Kanban", icon: ClipboardList, color: "text-orange-300" },
+    ],
   },
-  hero: {
-    textAlign: 'center',
-    maxWidth: '800px',
-    marginBottom: '4rem',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+  {
+    label: "Create",
+    items: [
+      { label: "Notes", icon: FileText, color: "text-emerald-400" },
+      { label: "Whiteboard", icon: PenTool, color: "text-pink-400" },
+      { label: "Pages / Spaces", icon: Library, color: "text-cyan-300" },
+      { label: "AI Template Builder", icon: WandSparkles, color: "text-violet-300" },
+    ],
   },
-  badge: {
-    display: 'inline-block',
-    padding: '0.5rem 1rem',
-    borderRadius: '9999px',
-    backgroundColor: '#27272a',
-    fontSize: '0.875rem',
-    fontWeight: 500,
-    color: '#38bdf8',
-    marginBottom: '1.5rem',
-    border: '1px solid #3f3f46',
+  {
+    label: "System",
+    items: [{ label: "Settings", icon: Settings, color: "text-slate-400" }],
   },
-  title: {
-    fontSize: '3rem',
-    fontWeight: 800,
-    letterSpacing: '-0.025em',
-    lineHeight: 1.2,
-    margin: '0 0 1rem 0',
+]
+
+const workspaceCards = [
+  {
+    title: "Daily Command Center",
+    description: "Notes, meetings, and open decisions arranged for fast capture.",
+    accent: "bg-indigo-400",
+    meta: "12 items",
   },
-  gradient: {
-    background: 'linear-gradient(to right, #38bdf8, #818cf8, #c084fc)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
+  {
+    title: "Product Sprint",
+    description: "Kanban board, launch checklist, and whiteboard frames in one space.",
+    accent: "bg-orange-300",
+    meta: "6 boards",
   },
-  subtitle: {
-    fontSize: '1.125rem',
-    color: '#a1a1aa',
-    lineHeight: 1.6,
-    margin: '0 0 2rem 0',
-    maxWidth: '600px',
+  {
+    title: "AI Research Hub",
+    description: "Reusable prompts, summaries, and template experiments.",
+    accent: "bg-violet-300",
+    meta: "18 docs",
   },
-  ctaGroup: {
-    display: 'flex',
-    gap: '1rem',
-  },
-  primaryCta: {
-    padding: '0.75rem 1.5rem',
-    borderRadius: '8px',
-    backgroundColor: '#38bdf8',
-    color: '#09090b',
-    fontWeight: 600,
-    textDecoration: 'none',
-    transition: 'opacity 0.2s',
-  },
-  secondaryCta: {
-    padding: '0.75rem 1.5rem',
-    borderRadius: '8px',
-    backgroundColor: 'transparent',
-    color: '#fafafa',
-    fontWeight: 600,
-    textDecoration: 'none',
-    border: '1px solid #3f3f46',
-    transition: 'background-color 0.2s',
-  },
-  grid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-    gap: '2rem',
-    width: '100%',
-    maxWidth: '1000px',
-    marginBottom: '4rem',
-  },
-  card: {
-    backgroundColor: '#18181b',
-    border: '1px solid #27272a',
-    borderRadius: '12px',
-    padding: '1.5rem',
-    transition: 'transform 0.2s, border-color 0.2s',
-  },
-  icon: {
-    fontSize: '2rem',
-    marginBottom: '1rem',
-  },
-  cardTitle: {
-    fontSize: '1.25rem',
-    fontWeight: 600,
-    margin: '0 0 0.5rem 0',
-  },
-  cardText: {
-    fontSize: '0.875rem',
-    color: '#a1a1aa',
-    lineHeight: 1.5,
-    margin: 0,
-  },
-  footer: {
-    fontSize: '0.875rem',
-    color: '#71717a',
-    marginTop: 'auto',
-  },
-};
+]
+
+const upcomingItems = [
+  { time: "09:30", title: "Weekly planning", color: "bg-blue-400" },
+  { time: "11:00", title: "Map onboarding flow", color: "bg-pink-400" },
+  { time: "14:15", title: "Draft template pack", color: "bg-violet-300" },
+]
+
+const sidebarSearchScript = `
+document.addEventListener("input", function (event) {
+  var input = event.target;
+  if (!input || !input.classList || !input.classList.contains("flowforge-sidebar-search-input")) {
+    return;
+  }
+
+  var query = input.value.trim().toLowerCase();
+  var groups = document.querySelectorAll(".sidebar-menu-group");
+
+  groups.forEach(function (group) {
+    var visibleItems = 0;
+    var items = group.querySelectorAll(".sidebar-menu-item");
+
+    items.forEach(function (item) {
+      var label = (item.getAttribute("data-label") || "").toLowerCase();
+      var isVisible = label.indexOf(query) !== -1;
+
+      item.hidden = !isVisible;
+      if (isVisible) {
+        visibleItems += 1;
+      }
+    });
+
+    group.hidden = visibleItems === 0;
+  });
+});
+`
+
+export default function Home() {
+  React.useEffect(() => {
+    const input = document.querySelector<HTMLInputElement>(
+      ".flowforge-sidebar-search-input"
+    )
+
+    if (!input) {
+      return
+    }
+
+    const filterMenu = () => {
+      const query = input.value.trim().toLowerCase()
+      const groups = document.querySelectorAll<HTMLElement>(".sidebar-menu-group")
+
+      groups.forEach((group) => {
+        const items = group.querySelectorAll<HTMLButtonElement>(".sidebar-menu-item")
+        let visibleItems = 0
+
+        items.forEach((item) => {
+          const label = item.dataset.label?.toLowerCase() ?? ""
+          const isVisible = label.includes(query)
+
+          item.hidden = !isVisible
+          if (isVisible) {
+            visibleItems += 1
+          }
+        })
+
+        group.hidden = visibleItems === 0
+      })
+    }
+
+    input.addEventListener("input", filterMenu)
+    filterMenu()
+
+    return () => input.removeEventListener("input", filterMenu)
+  }, [])
+
+  return (
+    <main className="min-h-screen bg-[#0F172A] text-slate-100">
+      <script dangerouslySetInnerHTML={{ __html: sidebarSearchScript }} />
+      <div className="dashboard-shell flex min-h-screen overflow-hidden">
+        <input
+          id="sidebar-collapse-toggle"
+          type="checkbox"
+          className="sidebar-collapse-toggle sr-only"
+          aria-label="Collapse sidebar"
+        />
+        <aside
+          className="flowforge-sidebar flex min-h-screen w-72 shrink-0 flex-col border-r border-slate-700/70 bg-[#111827] shadow-2xl shadow-slate-950/30 transition-[width] duration-300 ease-out"
+          aria-label="Primary navigation"
+        >
+          <div className="flex h-20 items-center gap-3 border-b border-slate-700/60 px-4">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-indigo-300/20 bg-indigo-500/15 text-indigo-200 shadow-lg shadow-indigo-950/20">
+              <Sparkles className="h-5 w-5" aria-hidden="true" />
+            </div>
+            <div className="sidebar-expanded-only min-w-0 flex-1 transition-opacity duration-200">
+              <p className="truncate text-sm font-semibold tracking-wide text-white">
+                FlowForge
+              </p>
+              <p className="truncate text-xs text-slate-400">Cozy workspace OS</p>
+            </div>
+            <label
+              htmlFor="sidebar-collapse-toggle"
+              title="Toggle sidebar"
+              aria-label="Toggle sidebar"
+              className="sidebar-collapse-button grid h-8 w-8 shrink-0 cursor-pointer place-items-center rounded-lg border border-slate-700/60 bg-slate-800/45 text-slate-400 transition hover:bg-slate-800 hover:text-indigo-200"
+            >
+              <ChevronLeft
+                className="sidebar-collapse-icon h-4 w-4 transition-transform duration-300"
+                aria-hidden="true"
+              />
+            </label>
+          </div>
+
+          <div className="border-b border-slate-700/50 px-3 py-3">
+            <label
+              className="sidebar-search flex h-8 w-full items-center gap-2.5 rounded-lg border border-slate-700/60 bg-slate-800/45 px-2.5 text-left text-[0.72rem] text-slate-500 transition hover:border-slate-600 hover:bg-slate-800/70 hover:text-slate-300"
+              title="Search"
+            >
+              <Search className="h-3.5 w-3.5 shrink-0 text-indigo-300" aria-hidden="true" />
+              <input
+                type="search"
+                placeholder="Search workspace"
+                aria-label="Search sidebar menu"
+                className="flowforge-sidebar-search-input sidebar-expanded-only min-w-0 flex-1 bg-transparent text-[0.72rem] text-slate-200 outline-none placeholder:text-slate-500"
+              />
+              <span className="sidebar-expanded-only ml-auto rounded border border-slate-700/70 px-1.5 py-0.5 text-[0.62rem] text-slate-500">
+                /
+              </span>
+            </label>
+          </div>
+
+          <nav className="flex-1 space-y-4 overflow-y-auto px-3 py-4">
+            {menuGroups.map((group) => (
+              <div key={group.label} className="sidebar-menu-group">
+                <div
+                  className="sidebar-group-label mb-1.5 flex items-center gap-2 px-2.5 transition-opacity"
+                >
+                  <span className="h-px flex-1 rounded-full bg-slate-700/55" />
+                  <span className="sidebar-expanded-only shrink-0 text-[0.62rem] font-semibold uppercase tracking-[0.18em] text-slate-500">
+                    {group.label}
+                  </span>
+                  <span className="h-px flex-1 rounded-full bg-slate-700/55" />
+                </div>
+                <div className="space-y-0.5">
+                  {group.items.map((item) => {
+                    const Icon = item.icon
+
+                    return (
+                      <button
+                        key={item.label}
+                        type="button"
+                        title={item.label}
+                        aria-label={item.label}
+                        data-label={item.label}
+                        className={cn(
+                          "sidebar-menu-item group flex h-8 w-full items-center gap-2.5 rounded-lg border border-transparent px-2.5 text-left text-[0.72rem] font-medium text-slate-400 transition-all duration-200 hover:border-slate-700/80 hover:bg-slate-800/55 hover:text-slate-100",
+                          item.active &&
+                            "border-indigo-400/20 bg-indigo-500/10 text-slate-50 shadow-sm shadow-indigo-950/20"
+                        )}
+                      >
+                        <Icon
+                          className={cn(
+                            "h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:scale-105",
+                            item.color
+                          )}
+                          aria-hidden="true"
+                        />
+                        <span className="sidebar-expanded-only truncate transition-opacity duration-200">
+                          {item.label}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            ))}
+          </nav>
+
+          <div className="border-t border-slate-700/60 p-3">
+            <div
+              className="sidebar-footer-card mb-3 rounded-xl border border-slate-700/70 bg-slate-800/60 p-3"
+            >
+              <div className="flex items-center gap-3">
+                <div className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-slate-700/80 text-slate-200">
+                  <UsersRound className="h-4 w-4" aria-hidden="true" />
+                </div>
+                <div className="sidebar-expanded-only min-w-0">
+                  <p className="truncate text-xs font-semibold text-slate-100">
+                    Studio Space
+                  </p>
+                  <p className="truncate text-[0.7rem] text-slate-400">
+                    Synced moments ago
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </aside>
+
+        <section className="flex min-w-0 flex-1 flex-col">
+          <header className="flex min-h-20 items-center justify-between border-b border-slate-700/70 bg-slate-950/30 px-6 backdrop-blur">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-[0.16em] text-indigo-300">
+                Dashboard
+              </p>
+              <h1 className="mt-1 text-2xl font-semibold tracking-tight text-white">
+                Welcome back to FlowForge
+              </h1>
+            </div>
+            <div className="hidden items-center gap-2 md:flex">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="rounded-xl border border-slate-700/60 bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white"
+                aria-label="Previous workspace"
+              >
+                <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                className="rounded-xl border border-indigo-400/20 bg-indigo-500/15 px-4 text-sm text-indigo-100 hover:bg-indigo-500/20 hover:text-white"
+              >
+                <Sparkles className="mr-2 h-4 w-4" aria-hidden="true" />
+                New canvas
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="rounded-xl border border-slate-700/60 bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white"
+                aria-label="Next workspace"
+              >
+                <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              </Button>
+            </div>
+          </header>
+
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+            <div className="mx-auto grid max-w-7xl gap-6 xl:grid-cols-[minmax(0,1fr)_22rem]">
+              <div className="space-y-6">
+                <section className="rounded-xl border border-slate-700/70 bg-[#1F2937]/80 p-6 shadow-xl shadow-slate-950/20">
+                  <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+                    <div className="max-w-2xl">
+                      <p className="text-sm font-medium text-violet-200">
+                        Your calm command surface
+                      </p>
+                      <h2 className="mt-3 text-3xl font-semibold tracking-tight text-white">
+                        Notes, whiteboards, tasks, and AI context in one focused workspace.
+                      </h2>
+                      <p className="mt-4 max-w-xl text-sm leading-6 text-slate-400">
+                        Keep strategy, daily work, and creative exploration close without
+                        turning the interface into noise.
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3 rounded-xl border border-slate-700/70 bg-slate-900/50 p-3">
+                      {[
+                        ["Active spaces", "08"],
+                        ["Open tasks", "24"],
+                        ["AI drafts", "13"],
+                      ].map(([label, value]) => (
+                        <div key={label} className="min-w-24 rounded-lg bg-slate-800/70 p-3">
+                          <p className="text-xl font-semibold text-white">{value}</p>
+                          <p className="mt-1 text-[0.68rem] uppercase tracking-wide text-slate-500">
+                            {label}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+
+                <section className="grid gap-4 lg:grid-cols-3">
+                  {workspaceCards.map((card) => (
+                    <article
+                      key={card.title}
+                      className="rounded-xl border border-slate-700/70 bg-[#1F2937]/75 p-5 shadow-lg shadow-slate-950/10 transition duration-200 hover:-translate-y-0.5 hover:border-slate-600 hover:bg-slate-800"
+                    >
+                      <div className="mb-5 flex items-center justify-between">
+                        <span className={cn("h-2.5 w-2.5 rounded-full", card.accent)} />
+                        <span className="rounded-full border border-slate-700 px-2.5 py-1 text-[0.68rem] text-slate-400">
+                          {card.meta}
+                        </span>
+                      </div>
+                      <h3 className="text-sm font-semibold text-white">{card.title}</h3>
+                      <p className="mt-2 text-xs leading-5 text-slate-400">
+                        {card.description}
+                      </p>
+                    </article>
+                  ))}
+                </section>
+
+                <section className="rounded-xl border border-slate-700/70 bg-[#1F2937]/75 p-5 shadow-lg shadow-slate-950/10">
+                  <div className="mb-5 flex items-center justify-between">
+                    <div>
+                      <h2 className="text-sm font-semibold text-white">Kanban pulse</h2>
+                      <p className="mt-1 text-xs text-slate-400">
+                        A compact preview of the work moving through FlowForge.
+                      </p>
+                    </div>
+                    <span className="rounded-full bg-orange-300/10 px-3 py-1 text-xs text-orange-200">
+                      Sprint 04
+                    </span>
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-3">
+                    {["Backlog", "In progress", "Review"].map((column, index) => (
+                      <div
+                        key={column}
+                        className="min-h-36 rounded-xl border border-slate-700/60 bg-slate-900/45 p-3"
+                      >
+                        <p className="mb-3 text-xs font-medium text-slate-300">{column}</p>
+                        <div className="space-y-2">
+                          {[0, 1].map((item) => (
+                            <div
+                              key={`${column}-${item}`}
+                              className="rounded-lg border border-slate-700/70 bg-slate-800/70 p-3"
+                            >
+                              <div
+                                className={cn(
+                                  "mb-3 h-1.5 rounded-full",
+                                  index === 0 && "bg-indigo-400/70",
+                                  index === 1 && "bg-orange-300/70",
+                                  index === 2 && "bg-emerald-400/70"
+                                )}
+                              />
+                              <p className="text-xs text-slate-300">
+                                {item === 0 ? "Refine workspace shell" : "Capture user flows"}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+
+              <aside className="space-y-6">
+                <section className="rounded-xl border border-slate-700/70 bg-[#1F2937]/75 p-5 shadow-lg shadow-slate-950/10">
+                  <div className="mb-5 flex items-center justify-between">
+                    <h2 className="text-sm font-semibold text-white">Today</h2>
+                    <CalendarDays className="h-4 w-4 text-blue-300" aria-hidden="true" />
+                  </div>
+                  <div className="space-y-3">
+                    {upcomingItems.map((item) => (
+                      <div
+                        key={item.title}
+                        className="flex items-center gap-3 rounded-xl border border-slate-700/60 bg-slate-900/40 p-3"
+                      >
+                        <span className={cn("h-2.5 w-2.5 rounded-full", item.color)} />
+                        <div className="min-w-0">
+                          <p className="text-xs font-medium text-slate-200">{item.title}</p>
+                          <p className="text-[0.7rem] text-slate-500">{item.time}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+
+                <section className="rounded-xl border border-slate-700/70 bg-[#1F2937]/75 p-5 shadow-lg shadow-slate-950/10">
+                  <div className="mb-4 flex items-center gap-2">
+                    <Bot className="h-4 w-4 text-purple-300" aria-hidden="true" />
+                    <h2 className="text-sm font-semibold text-white">AI Assistant</h2>
+                  </div>
+                  <p className="text-xs leading-5 text-slate-400">
+                    Ready to summarize notes, generate templates, and turn whiteboard
+                    fragments into structured project pages.
+                  </p>
+                  <button
+                    type="button"
+                    className="mt-5 w-full rounded-xl border border-purple-300/20 bg-purple-400/10 px-4 py-2.5 text-xs font-medium text-purple-100 transition hover:bg-purple-400/15"
+                  >
+                    Open assistant
+                  </button>
+                </section>
+              </aside>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  )
+}
