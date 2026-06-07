@@ -1,17 +1,11 @@
 import {
   ChevronLeft,
-  Library,
   Search,
   Sparkles,
   UsersRound,
 } from "lucide-react"
-
 import { cn } from "@/lib/utils"
-
-import {
-  menuGroups,
-  type MenuGroup,
-} from "@/components/dashboard/dashboard-data"
+import { menuGroups } from "@/components/dashboard/dashboard-data"
 
 export function Sidebar() {
   return (

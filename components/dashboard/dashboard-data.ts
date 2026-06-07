@@ -1,23 +1,19 @@
 import {
   Bot,
   CalendarDays,
-  ChevronLeft,
-  ChevronRight,
   ClipboardList,
   FileText,
   LayoutDashboard,
   Library,
   PenTool,
-  Search,
   Settings,
-  Sparkles,
-  UsersRound,
   WandSparkles,
 } from "lucide-react"
 import * as React from "react"
 
 export type MenuItem = {
   label: string
+  href: string
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   color: string
   active?: boolean
@@ -34,27 +30,70 @@ export const menuGroups: MenuGroup[] = [
     items: [
       {
         label: "Dashboard",
+        href: "/",
         icon: LayoutDashboard,
         color: "text-indigo-400",
         active: true,
       },
-      { label: "AI Assistant", icon: Bot, color: "text-purple-400" },
-      { label: "Calendar", icon: CalendarDays, color: "text-blue-400" },
-      { label: "Task / Kanban", icon: ClipboardList, color: "text-orange-300" },
+      {
+        label: "AI Assistant",
+        href: "/assistant",
+        icon: Bot,
+        color: "text-purple-400",
+      },
+      {
+        label: "Calendar",
+        href: "/calendar",
+        icon: CalendarDays,
+        color: "text-blue-400",
+      },
+      {
+        label: "Task / Kanban",
+        href: "/kanban",
+        icon: ClipboardList,
+        color: "text-orange-300",
+      },
     ],
   },
   {
     label: "Create",
     items: [
-      { label: "Notes", icon: FileText, color: "text-emerald-400" },
-      { label: "Whiteboard", icon: PenTool, color: "text-pink-400" },
-      { label: "Pages / Spaces", icon: Library, color: "text-cyan-300" },
-      { label: "AI Template Builder", icon: WandSparkles, color: "text-violet-300" },
+      {
+        label: "Notes",
+        href: "/notes",
+        icon: FileText,
+        color: "text-emerald-400",
+      },
+      {
+        label: "Whiteboard",
+        href: "/whiteboard",
+        icon: PenTool,
+        color: "text-pink-400",
+      },
+      {
+        label: "Pages / Spaces",
+        href: "/spaces",
+        icon: Library,
+        color: "text-cyan-300",
+      },
+      {
+        label: "AI Template Builder",
+        href: "/templates",
+        icon: WandSparkles,
+        color: "text-violet-300",
+      },
     ],
   },
   {
     label: "System",
-    items: [{ label: "Settings", icon: Settings, color: "text-slate-400" }],
+    items: [
+      {
+        label: "Settings",
+        href: "/settings",
+        icon: Settings,
+        color: "text-slate-400",
+      },
+    ],
   },
 ]
 
