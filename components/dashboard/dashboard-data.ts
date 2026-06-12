@@ -16,7 +16,6 @@ export type MenuItem = {
   href: string
   icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   color: string
-  active?: boolean
 }
 
 export type MenuGroup = {
@@ -33,7 +32,6 @@ export const menuGroups: MenuGroup[] = [
         href: "/",
         icon: LayoutDashboard,
         color: "text-indigo-400",
-        active: true,
       },
       {
         label: "AI Assistant",
