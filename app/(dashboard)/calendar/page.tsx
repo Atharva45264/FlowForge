@@ -3,6 +3,10 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { addMonths, subMonths } from "date-fns";
+import {
+  DndContext,
+  DragEndEvent,
+} from "@dnd-kit/core";
 
 import { CalendarHeader } from "@/components/calendar/calendar-header";
 import { CalendarView } from "@/components/calendar/calendar-types";
@@ -18,10 +22,54 @@ import { WeekCalendarGrid } from "@/components/calendar/week-calendar-grid";
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<CalendarView>("month");
-  const [tasks] = useState(scheduledTasks);
+  const [tasks, setTasks] = useState(scheduledTasks);
   const [draftTasks, setDraftTasks] = useState(initialDraftTasks);
 
+  const handleDragEnd = (event: DragEndEvent) => {
+  const { active, over } = event;
+
+  if (!over) return;
+
+  const draftTask = draftTasks.find(
+    (task) => task.id === active.id
+  );
+
+  if (draftTask) {
+    setTasks((prev) => [
+      ...prev,
+      {
+        ...draftTask,
+        date: String(over.id),
+      },
+    ]);
+
+    setDraftTasks((prev) =>
+      prev.filter((task) => task.id !== active.id)
+    );
+
+    return;
+  }
+
+  const scheduledTask = tasks.find(
+    (task) => task.id === active.id
+  );
+
+  if (scheduledTask) {
+    setTasks((prev) =>
+      prev.map((task) =>
+        task.id === active.id
+          ? {
+              ...task,
+              date: String(over.id),
+            }
+          : task
+      )
+    );
+  }
+};
+
   return (
+    <DndContext onDragEnd={handleDragEnd}>
     <div className="space-y-6">
       <CalendarHeader
         currentMonth={format(currentDate, "MMMM yyyy")}
@@ -58,5 +106,6 @@ export default function CalendarPage() {
         </div>
       </div>
     </div>
+    </DndContext>
   );
 }
