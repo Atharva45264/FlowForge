@@ -1,8 +1,15 @@
 import { Plus } from "lucide-react"
 
-import { draftTasks } from "./sample-data"
+import { CalendarTask } from "./calendar-types"
 
-export function DraftTaskPanel() {
+type DraftTaskPanelProps = {
+  tasks: CalendarTask[]
+}
+
+
+export function DraftTaskPanel({
+  tasks,
+}: DraftTaskPanelProps) {
   return (
     <div className="rounded-xl border border-slate-700/70 bg-[#1F2937]/75 p-5 shadow-lg shadow-slate-950/10">
       <div className="mb-5 flex items-center justify-between">
@@ -25,7 +32,7 @@ export function DraftTaskPanel() {
       </div>
 
       <div className="space-y-3">
-        {draftTasks.map((task) => (
+        {tasks.map((task) => (
           <div
             key={task.id}
             className="rounded-lg border border-slate-700 bg-slate-800/60 p-3 transition hover:border-slate-600"
