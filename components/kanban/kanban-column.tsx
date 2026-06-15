@@ -25,6 +25,15 @@ type KanbanColumnProps = {
       columnId: string
     }
   ) => void
+
+  onUpdateTask: (
+    taskId: string,
+    updates: Record<string, any>
+  ) => void
+
+  onDeleteTask: (
+    taskId: string
+  ) => void
 }
 
 export function KanbanColumn({
@@ -32,6 +41,8 @@ export function KanbanColumn({
   tasks,
   boardId,
   onCreateTask,
+  onUpdateTask,
+  onDeleteTask,
 }: KanbanColumnProps) {
   const { setNodeRef } = useDroppable({
     id: column.id,
@@ -54,11 +65,13 @@ export function KanbanColumn({
 
       <div className="space-y-3">
         {tasks.map((task) => (
-          <KanbanCard
-            key={task.id}
-            task={task}
-          />
-        ))}
+  <KanbanCard
+    key={task.id}
+    task={task}
+    onUpdateTask={onUpdateTask}
+    onDeleteTask={onDeleteTask}
+  />
+))}
 
         <CreateTaskDialog
           columnId={column.id}

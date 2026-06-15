@@ -3,13 +3,25 @@
 import { useDraggable } from "@dnd-kit/core"
 
 import { KanbanTask } from "./kanban-types"
+import { TaskDetailsDialog } from "./task-details-dialog"
 
 type KanbanCardProps = {
   task: KanbanTask
+
+  onUpdateTask: (
+    taskId: string,
+    updates: Record<string, any>
+  ) => void
+
+  onDeleteTask: (
+    taskId: string
+  ) => void
 }
 
 export function KanbanCard({
   task,
+  onUpdateTask,
+  onDeleteTask,
 }: KanbanCardProps) {
   const {
     attributes,
@@ -27,12 +39,17 @@ export function KanbanCard({
     : undefined
 
   return (
+  <TaskDetailsDialog
+    task={task}
+    onUpdateTask={onUpdateTask}
+    onDeleteTask={onDeleteTask}
+  >
     <div
       ref={setNodeRef}
       style={style}
       {...listeners}
       {...attributes}
-      className="cursor-grab rounded-xl border border-slate-700 bg-slate-800/70 p-3 shadow-sm active:cursor-grabbing"
+      className="cursor-grab rounded-xl border border-slate-700 bg-slate-800/70 p-3 shadow-sm transition hover:border-indigo-400/40 active:cursor-grabbing"
     >
       <h3 className="text-sm font-medium text-white">
         {task.title}
@@ -66,5 +83,6 @@ export function KanbanCard({
         </span>
       </div>
     </div>
-  )
+  </TaskDetailsDialog>
+)
 }

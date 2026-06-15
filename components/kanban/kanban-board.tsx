@@ -14,11 +14,22 @@ type KanbanBoardProps = {
       columnId: string
     }
   ) => void
+
+  onUpdateTask: (
+    taskId: string,
+    updates: Record<string, any>
+  ) => void
+
+  onDeleteTask: (
+    taskId: string
+  ) => void
 }
 
 export function KanbanBoard({
   board,
   onCreateTask,
+  onUpdateTask,
+  onDeleteTask,
 }: KanbanBoardProps) {
   return (
     <div className="flex gap-4 overflow-x-auto pb-2">
@@ -34,6 +45,8 @@ export function KanbanBoard({
             tasks={columnTasks}
             boardId={board.id}
             onCreateTask={onCreateTask}
+            onUpdateTask={onUpdateTask}
+            onDeleteTask={onDeleteTask}
           />
         )
       })}

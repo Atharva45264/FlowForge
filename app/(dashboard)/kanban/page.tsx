@@ -47,6 +47,38 @@ export default function KanbanPage() {
   )
 }
 
+const handleUpdateTask = (
+  taskId: string,
+  updates: Record<string, any>
+) => {
+  setBoards((prev) =>
+    prev.map((board) => ({
+      ...board,
+      tasks: board.tasks.map((task) =>
+        task.id === taskId
+          ? {
+              ...task,
+              ...updates,
+            }
+          : task
+      ),
+    }))
+  )
+}
+
+const handleDeleteTask = (
+  taskId: string
+) => {
+  setBoards((prev) =>
+    prev.map((board) => ({
+      ...board,
+      tasks: board.tasks.filter(
+        (task) => task.id !== taskId
+      ),
+    }))
+  )
+}
+
 const handleDragEnd = (
   event: DragEndEvent
 ) => {
@@ -109,6 +141,8 @@ const handleDragEnd = (
   <KanbanBoard
   board={activeBoard}
   onCreateTask={handleCreateTask}
+  onUpdateTask={handleUpdateTask}
+  onDeleteTask={handleDeleteTask}
 />
 )}
       </div>
