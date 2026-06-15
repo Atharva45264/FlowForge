@@ -1,0 +1,45 @@
+import { KanbanTask } from "./kanban-types"
+
+type KanbanCardProps = {
+  task: KanbanTask
+}
+
+export function KanbanCard({
+  task,
+}: KanbanCardProps) {
+  return (
+    <div className="rounded-xl border border-slate-700 bg-slate-800/70 p-3 shadow-sm">
+      <h3 className="text-sm font-medium text-white">
+        {task.title}
+      </h3>
+
+      <div className="mt-3 flex flex-wrap gap-2">
+        {task.labels.map((label) => (
+          <span
+            key={label.id}
+            className="rounded-full px-2 py-1 text-[10px] font-medium text-white"
+            style={{
+              backgroundColor: label.color,
+            }}
+          >
+            {label.name}
+          </span>
+        ))}
+      </div>
+
+      <div className="mt-3">
+        <span
+          className={`rounded-full px-2 py-1 text-[10px] font-medium ${
+            task.priority === "high"
+              ? "bg-red-500/20 text-red-300"
+              : task.priority === "medium"
+              ? "bg-yellow-500/20 text-yellow-300"
+              : "bg-emerald-500/20 text-emerald-300"
+          }`}
+        >
+          {task.priority}
+        </span>
+      </div>
+    </div>
+  )
+}
