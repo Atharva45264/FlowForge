@@ -11,11 +11,19 @@ export type TaskLabel = {
 
 export type KanbanTask = {
   id: string
+
   title: string
   description?: string
+
   dueDate?: string
+
   priority: Priority
+
   labels: TaskLabel[]
+
+  syncCalendar?: boolean
+  syncNotes?: boolean
+
   columnId: string
 }
 
