@@ -1,7 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import { Plus } from "lucide-react"
+import { useDroppable } from "@dnd-kit/core"
 
 import { KanbanCard } from "./kanban-card"
 import { CreateTaskDialog } from "./create-task-dialog"
@@ -34,11 +33,15 @@ export function KanbanColumn({
   boardId,
   onCreateTask,
 }: KanbanColumnProps) {
-  const [showCreateTask, setShowCreateTask] =
-    useState(false)
+  const { setNodeRef } = useDroppable({
+    id: column.id,
+  })
 
   return (
-    <div className="w-80 shrink-0 rounded-xl border border-slate-700 bg-[#111827] p-4">
+    <div
+      ref={setNodeRef}
+      className="w-80 shrink-0 rounded-xl border border-slate-700 bg-[#111827] p-4"
+    >
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-sm font-semibold text-white">
           {column.name}
@@ -57,24 +60,12 @@ export function KanbanColumn({
           />
         ))}
 
-        {!showCreateTask ? (
-          <button
-            type="button"
-            onClick={() => setShowCreateTask(true)}
-            className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-600 py-3 text-sm text-slate-400 transition hover:border-indigo-400 hover:text-indigo-300"
-          >
-            <Plus className="h-4 w-4" />
-            Add Task
-          </button>
-        ) : (
-          <CreateTaskDialog
-            columnId={column.id}
-            onCreateTask={(task) => {
-              onCreateTask(boardId, task)
-              setShowCreateTask(false)
-            }}
-          />
-        )}
+        <CreateTaskDialog
+          columnId={column.id}
+          onCreateTask={(task) =>
+            onCreateTask(boardId, task)
+          }
+        />
       </div>
     </div>
   )

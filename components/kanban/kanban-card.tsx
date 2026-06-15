@@ -1,3 +1,7 @@
+"use client"
+
+import { useDraggable } from "@dnd-kit/core"
+
 import { KanbanTask } from "./kanban-types"
 
 type KanbanCardProps = {
@@ -7,8 +11,29 @@ type KanbanCardProps = {
 export function KanbanCard({
   task,
 }: KanbanCardProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+  } = useDraggable({
+    id: task.id,
+  })
+
+  const style = transform
+    ? {
+        transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+      }
+    : undefined
+
   return (
-    <div className="rounded-xl border border-slate-700 bg-slate-800/70 p-3 shadow-sm">
+    <div
+      ref={setNodeRef}
+      style={style}
+      {...listeners}
+      {...attributes}
+      className="cursor-grab rounded-xl border border-slate-700 bg-slate-800/70 p-3 shadow-sm active:cursor-grabbing"
+    >
       <h3 className="text-sm font-medium text-white">
         {task.title}
       </h3>

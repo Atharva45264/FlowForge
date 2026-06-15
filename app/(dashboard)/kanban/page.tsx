@@ -5,6 +5,10 @@ import { useMemo, useState } from "react"
 import { boards as initialBoards } from "@/components/kanban/sample-data"
 import { KanbanSidebar } from "@/components/kanban/kanban-sidebar"
 import { KanbanBoard } from "@/components/kanban/kanban-board"
+import {
+  DndContext,
+  DragEndEvent,
+} from "@dnd-kit/core"
 
 export default function KanbanPage() {
   const [boards, setBoards] = useState(initialBoards)
@@ -43,6 +47,34 @@ export default function KanbanPage() {
   )
 }
 
+const handleDragEnd = (
+  event: DragEndEvent
+) => {
+  const { active, over } = event
+
+  if (!over) return
+
+  setBoards((prev) =>
+    prev.map((board) => {
+      if (board.id !== activeBoardId) {
+        return board
+      }
+
+      return {
+        ...board,
+        tasks: board.tasks.map((task) =>
+          task.id === active.id
+            ? {
+                ...task,
+                columnId: String(over.id),
+              }
+            : task
+        ),
+      }
+    })
+  )
+}
+
   const activeBoard = useMemo(
     () =>
       boards.find(
@@ -52,6 +84,9 @@ export default function KanbanPage() {
   )
 
   return (
+    <DndContext
+    onDragEnd={handleDragEnd}
+  >
     <div className="flex gap-6">
       <KanbanSidebar
         boards={boards}
@@ -78,5 +113,6 @@ export default function KanbanPage() {
 )}
       </div>
     </div>
+  </DndContext>
   )
 }
