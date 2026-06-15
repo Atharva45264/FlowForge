@@ -79,6 +79,92 @@ const handleDeleteTask = (
   )
 }
 
+const handleCreateColumn = (
+  name: string
+) => {
+  setBoards((prev) =>
+    prev.map((board) => {
+      if (board.id !== activeBoardId) {
+        return board
+      }
+
+      return {
+        ...board,
+        columns: [
+          ...board.columns,
+          {
+            id: crypto.randomUUID(),
+            name,
+          },
+        ],
+      }
+    })
+  )
+}
+
+const handleRenameColumn = (
+  columnId: string,
+  newName: string
+) => {
+  setBoards((prev) =>
+    prev.map((board) => {
+      if (board.id !== activeBoardId) {
+        return board
+      }
+
+      return {
+        ...board,
+        columns: board.columns.map((column) =>
+          column.id === columnId
+            ? {
+                ...column,
+                name: newName,
+              }
+            : column
+        ),
+      }
+    })
+  )
+}
+
+const handleDeleteColumn = (
+  columnId: string
+) => {
+  setBoards((prev) =>
+    prev.map((board) => {
+      if (board.id !== activeBoardId) {
+        return board
+      }
+
+      const fallbackColumn =
+        board.columns.find(
+          (column) => column.id === "todo"
+        ) ?? board.columns[0]
+
+      if (!fallbackColumn) {
+        return board
+      }
+
+      return {
+        ...board,
+
+        columns: board.columns.filter(
+          (column) => column.id !== columnId
+        ),
+
+        tasks: board.tasks.map((task) =>
+          task.columnId === columnId
+            ? {
+                ...task,
+                columnId: fallbackColumn.id,
+              }
+            : task
+        ),
+      }
+    })
+  )
+}
+
 const handleDragEnd = (
   event: DragEndEvent
 ) => {
@@ -143,6 +229,9 @@ const handleDragEnd = (
   onCreateTask={handleCreateTask}
   onUpdateTask={handleUpdateTask}
   onDeleteTask={handleDeleteTask}
+  onCreateColumn={handleCreateColumn}
+  onRenameColumn={handleRenameColumn}
+  onDeleteColumn={handleDeleteColumn}
 />
 )}
       </div>

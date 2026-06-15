@@ -1,5 +1,6 @@
 import { KanbanColumn } from "./kanban-column"
 import { KanbanBoard as BoardType } from "./kanban-types"
+import { CreateColumnDialog } from "./create-column-dialog"
 
 type KanbanBoardProps = {
   board: BoardType
@@ -23,13 +24,31 @@ type KanbanBoardProps = {
   onDeleteTask: (
     taskId: string
   ) => void
+
+  onCreateColumn: (
+    name: string
+  ) => void
+
+  onRenameColumn: (
+  columnId: string,
+  newName: string
+) => void
+
+onDeleteColumn: (
+  columnId: string
+) => void
 }
+
+
 
 export function KanbanBoard({
   board,
   onCreateTask,
   onUpdateTask,
   onDeleteTask,
+  onCreateColumn,
+  onRenameColumn,
+  onDeleteColumn,
 }: KanbanBoardProps) {
   return (
     <div className="flex gap-4 overflow-x-auto pb-2">
@@ -37,6 +56,7 @@ export function KanbanBoard({
         const columnTasks = board.tasks.filter(
           (task) => task.columnId === column.id
         )
+        
 
         return (
           <KanbanColumn
@@ -47,9 +67,14 @@ export function KanbanBoard({
             onCreateTask={onCreateTask}
             onUpdateTask={onUpdateTask}
             onDeleteTask={onDeleteTask}
+            onRenameColumn={onRenameColumn}
+onDeleteColumn={onDeleteColumn}
           />
         )
       })}
+      <CreateColumnDialog
+  onCreateColumn={onCreateColumn}
+/>
     </div>
   )
 }
