@@ -1,18 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
-
-import { boards as initialBoards } from "@/components/kanban/sample-data";
+import { useMemo} from "react";
 import { KanbanSidebar } from "@/components/kanban/kanban-sidebar";
 import { KanbanBoard } from "@/components/kanban/kanban-board";
 import { useKanbanStore } from "@/store/kanban-store";
-
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 
 export default function KanbanPage() {
   const boards = useKanbanStore((state) => state.boards);
-
-  const setBoards = useKanbanStore((state) => state.setBoards);
 
   const activeBoardId = useKanbanStore((state) => state.activeBoardId);
 

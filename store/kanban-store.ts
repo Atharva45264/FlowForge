@@ -7,70 +7,66 @@ import {
 } from "@/components/kanban/kanban-types"
 
 type KanbanStore = {
+  // State
   boards: KanbanBoard[]
-
   activeBoardId: string
 
+  // State Actions
   setActiveBoardId: (
     id: string
   ) => void
 
-  setBoards: (
-  boards:
-    | KanbanBoard[]
-    | ((
-        prev: KanbanBoard[]
-      ) => KanbanBoard[])
-) => void
+  // Board Actions
+  createBoard: (
+    name: string,
+    color: string
+  ) => void
 
-createBoard: (
-  name: string,
-  color: string
-) => void
+  renameBoard: (
+    boardId: string,
+    newName: string
+  ) => void
 
-renameBoard: (
-  boardId: string,
-  newName: string
-) => void
+  deleteBoard: (
+    boardId: string
+  ) => void
 
-deleteBoard: (
-  boardId: string
-) => void
+  // Column Actions
+  createColumn: (
+    boardId: string,
+    name: string
+  ) => void
 
-createColumn: (
-  boardId: string,
-  name: string
-) => void
+  renameColumn: (
+    boardId: string,
+    columnId: string,
+    newName: string
+  ) => void
 
-renameColumn: (
-  boardId: string,
-  columnId: string,
-  newName: string
-) => void
+  deleteColumn: (
+    boardId: string,
+    columnId: string
+  ) => void
 
-deleteColumn: (
-  boardId: string,
-  columnId: string
-) => void
+  // Task Actions
+  createTask: (
+    boardId: string,
+    task: Omit<KanbanTask, "id">
+  ) => void
 
-createTask: (
-  boardId: string,
-  task: Omit<KanbanTask, "id">
-) => void
+  updateTask: (
+    taskId: string,
+    updates: Partial<KanbanTask>
+  ) => void
 
-updateTask: (
-  taskId: string,
-  updates: Partial<KanbanTask>
-) => void
+  deleteTask: (
+    taskId: string
+  ) => void
 
-deleteTask: (
-  taskId: string
-) => void
-
-moveTask: (
-  taskId: string,
-  targetColumnId: string
-) => void
+  moveTask: (
+    taskId: string,
+    targetColumnId: string
+  ) => void
 }
 
 export const useKanbanStore =
@@ -84,14 +80,6 @@ export const useKanbanStore =
       set({
         activeBoardId: id,
       }),
-
-    setBoards: (boards) =>
-  set((state) => ({
-    boards:
-      typeof boards === "function"
-        ? boards(state.boards)
-        : boards,
-  })),
   createBoard: (
   name,
   color
