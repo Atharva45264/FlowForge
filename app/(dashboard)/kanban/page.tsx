@@ -5,6 +5,8 @@ import { KanbanSidebar } from "@/components/kanban/kanban-sidebar";
 import { KanbanBoard } from "@/components/kanban/kanban-board";
 import { useKanbanStore } from "@/store/kanban-store";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { useCalendarStore }
+from "@/store/calendar-store"
 
 export default function KanbanPage() {
   const boards = useKanbanStore((state) => state.boards);
@@ -32,6 +34,12 @@ export default function KanbanPage() {
   const deleteBoard = useKanbanStore((state) => state.deleteBoard);
 
   const moveTask = useKanbanStore((state) => state.moveTask);
+
+  const createScheduledTask =
+  useCalendarStore(
+    (state) =>
+      state.createScheduledTask
+  )
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -72,7 +80,20 @@ export default function KanbanPage() {
           {activeBoard && (
             <KanbanBoard
               board={activeBoard}
-              onCreateTask={(boardId, task) => createTask(boardId, task)}
+              onCreateTask={(boardId, task) => {
+  createTask(boardId, task)
+
+  if (
+    task.syncCalendar &&
+    task.dueDate
+  ) {
+    createScheduledTask(
+      task.title,
+      task.dueDate,
+      "work"
+    )
+  }
+}}
               onUpdateTask={updateTask}
               onDeleteTask={deleteTask}
               onCreateColumn={(name) => createColumn(activeBoardId, name)}

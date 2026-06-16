@@ -1,20 +1,15 @@
 import { KanbanColumn } from "./kanban-column"
 import { KanbanBoard as BoardType } from "./kanban-types"
 import { CreateColumnDialog } from "./create-column-dialog"
+import { KanbanTask } from "./kanban-types"
 
 type KanbanBoardProps = {
   board: BoardType
 
   onCreateTask: (
-    boardId: string,
-    task: {
-      title: string
-      description?: string
-      priority: "low" | "medium" | "high"
-      labels: any[]
-      columnId: string
-    }
-  ) => void
+  boardId: string,
+  task: Omit<KanbanTask, "id">
+) => void
 
   onUpdateTask: (
     taskId: string,
