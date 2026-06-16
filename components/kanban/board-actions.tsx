@@ -2,8 +2,8 @@
 
 import { useState } from "react"
 
-type ColumnActionsProps = {
-  columnName: string
+type BoardActionsProps = {
+  boardName: string
 
   onRename: (
     newName: string
@@ -12,30 +12,29 @@ type ColumnActionsProps = {
   onDelete: () => void
 }
 
-export function ColumnActions({
-  columnName,
+export function BoardActions({
+  boardName,
   onRename,
   onDelete,
-}: ColumnActionsProps) {
+}: BoardActionsProps) {
   const [editing, setEditing] =
     useState(false)
 
   const [name, setName] =
-    useState(columnName)
+    useState(boardName)
 
   if (editing) {
     return (
-      <div className="flex gap-3 text-xs">
+      <div className="flex gap-2">
         <input
           value={name}
           onChange={(e) =>
             setName(e.target.value)
           }
-          className="w-28 rounded border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-white"
+          className="w-full rounded border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-white"
         />
 
         <button
-          type="button"
           onClick={() => {
             onRename(name)
             setEditing(false)
@@ -49,21 +48,19 @@ export function ColumnActions({
   }
 
   return (
-    <div className="flex gap-3 text-xs">
+    <div className="flex gap-2">
       <button
-        type="button"
         onClick={() =>
           setEditing(true)
         }
-        className="rounded-md px-2 py-1 text-slate-400 transition hover:bg-slate-800 hover:text-white"
+        className="text-xs text-slate-400 hover:text-white"
       >
         Rename
       </button>
 
       <button
-        type="button"
         onClick={onDelete}
-        className="rounded-md px-2 py-1 text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
+        className="text-xs text-red-400 hover:text-red-300"
       >
         Delete
       </button>

@@ -45,6 +45,7 @@ export function KanbanCard({
     onDeleteTask={onDeleteTask}
   >
     <div
+    suppressHydrationWarning
       ref={setNodeRef}
       style={style}
       {...listeners}

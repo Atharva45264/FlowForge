@@ -5,6 +5,7 @@ import { useMemo, useState } from "react"
 import { boards as initialBoards } from "@/components/kanban/sample-data"
 import { KanbanSidebar } from "@/components/kanban/kanban-sidebar"
 import { KanbanBoard } from "@/components/kanban/kanban-board"
+
 import {
   DndContext,
   DragEndEvent,
@@ -165,6 +166,83 @@ const handleDeleteColumn = (
   )
 }
 
+const handleCreateBoard = (
+  name: string,
+  color: string
+) => {
+  const newBoardId =
+    crypto.randomUUID()
+
+  const newBoard = {
+    id: newBoardId,
+    name,
+    color,
+
+    columns: [
+      {
+        id: "todo",
+        name: "Todo",
+      },
+      {
+        id: "in-progress",
+        name: "In Progress",
+      },
+      {
+        id: "done",
+        name: "Done",
+      },
+    ],
+
+    tasks: [],
+  }
+
+  setBoards((prev) => [
+    ...prev,
+    newBoard,
+  ])
+
+  setActiveBoardId(newBoardId)
+}
+
+const handleRenameBoard = (
+  boardId: string,
+  newName: string
+) => {
+  setBoards((prev) =>
+    prev.map((board) =>
+      board.id === boardId
+        ? {
+            ...board,
+            name: newName,
+          }
+        : board
+    )
+  )
+}
+
+const handleDeleteBoard = (
+  boardId: string
+) => {
+  setBoards((prev) => {
+    const updatedBoards =
+      prev.filter(
+        (board) =>
+          board.id !== boardId
+      )
+
+    if (
+      activeBoardId === boardId &&
+      updatedBoards.length > 0
+    ) {
+      setActiveBoardId(
+        updatedBoards[0].id
+      )
+    }
+
+    return updatedBoards
+  })
+}
+
 const handleDragEnd = (
   event: DragEndEvent
 ) => {
@@ -210,6 +288,9 @@ const handleDragEnd = (
         boards={boards}
         activeBoardId={activeBoardId}
         onSelectBoard={setActiveBoardId}
+        onCreateBoard={handleCreateBoard}
+        onRenameBoard={handleRenameBoard}
+        onDeleteBoard={handleDeleteBoard}
       />
 
       <div className="flex-1 rounded-xl border border-slate-700/70 bg-[#1F2937]/75 p-6">
