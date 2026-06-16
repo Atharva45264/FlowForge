@@ -5,6 +5,7 @@ import { useMemo, useState } from "react"
 import { boards as initialBoards } from "@/components/kanban/sample-data"
 import { KanbanSidebar } from "@/components/kanban/kanban-sidebar"
 import { KanbanBoard } from "@/components/kanban/kanban-board"
+import { useKanbanStore } from "@/store/kanban-store"
 
 import {
   DndContext,
@@ -12,11 +13,26 @@ import {
 } from "@dnd-kit/core"
 
 export default function KanbanPage() {
-  const [boards, setBoards] = useState(initialBoards)
 
-  const [activeBoardId, setActiveBoardId] = useState(
-    initialBoards[0].id
+const boards = useKanbanStore(
+  (state) => state.boards
+)
+
+const setBoards = useKanbanStore(
+  (state) => state.setBoards
+)
+
+const activeBoardId =
+  useKanbanStore(
+    (state) => state.activeBoardId
   )
+
+const setActiveBoardId =
+  useKanbanStore(
+    (state) => state.setActiveBoardId
+  )
+
+  
 
   const handleCreateTask = (
   boardId: string,
