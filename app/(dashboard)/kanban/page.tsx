@@ -1,338 +1,96 @@
-"use client"
+"use client";
 
-import { useMemo, useState } from "react"
+import { useMemo, useState } from "react";
 
-import { boards as initialBoards } from "@/components/kanban/sample-data"
-import { KanbanSidebar } from "@/components/kanban/kanban-sidebar"
-import { KanbanBoard } from "@/components/kanban/kanban-board"
-import { useKanbanStore } from "@/store/kanban-store"
+import { boards as initialBoards } from "@/components/kanban/sample-data";
+import { KanbanSidebar } from "@/components/kanban/kanban-sidebar";
+import { KanbanBoard } from "@/components/kanban/kanban-board";
+import { useKanbanStore } from "@/store/kanban-store";
 
-import {
-  DndContext,
-  DragEndEvent,
-} from "@dnd-kit/core"
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
 
 export default function KanbanPage() {
+  const boards = useKanbanStore((state) => state.boards);
 
-const boards = useKanbanStore(
-  (state) => state.boards
-)
+  const setBoards = useKanbanStore((state) => state.setBoards);
 
-const setBoards = useKanbanStore(
-  (state) => state.setBoards
-)
+  const activeBoardId = useKanbanStore((state) => state.activeBoardId);
 
-const activeBoardId =
-  useKanbanStore(
-    (state) => state.activeBoardId
-  )
+  const setActiveBoardId = useKanbanStore((state) => state.setActiveBoardId);
 
-const setActiveBoardId =
-  useKanbanStore(
-    (state) => state.setActiveBoardId
-  )
+  const createTask = useKanbanStore((state) => state.createTask);
 
-  
+  const updateTask = useKanbanStore((state) => state.updateTask);
 
-  const handleCreateTask = (
-  boardId: string,
-  task: {
-    title: string
-    description?: string
-    priority: "low" | "medium" | "high"
-    labels: any[]
-    columnId: string
-  }
-) => {
-  setBoards((prev) =>
-    prev.map((board) => {
-      if (board.id !== boardId) {
-        return board
-      }
+  const deleteTask = useKanbanStore((state) => state.deleteTask);
 
-      return {
-        ...board,
-        tasks: [
-          ...board.tasks,
-          {
-            id: crypto.randomUUID(),
-            ...task,
-          },
-        ],
-      }
-    })
-  )
-}
+  const createColumn = useKanbanStore((state) => state.createColumn);
 
-const handleUpdateTask = (
-  taskId: string,
-  updates: Record<string, any>
-) => {
-  setBoards((prev) =>
-    prev.map((board) => ({
-      ...board,
-      tasks: board.tasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              ...updates,
-            }
-          : task
-      ),
-    }))
-  )
-}
+  const renameColumn = useKanbanStore((state) => state.renameColumn);
 
-const handleDeleteTask = (
-  taskId: string
-) => {
-  setBoards((prev) =>
-    prev.map((board) => ({
-      ...board,
-      tasks: board.tasks.filter(
-        (task) => task.id !== taskId
-      ),
-    }))
-  )
-}
+  const deleteColumn = useKanbanStore((state) => state.deleteColumn);
 
-const handleCreateColumn = (
-  name: string
-) => {
-  setBoards((prev) =>
-    prev.map((board) => {
-      if (board.id !== activeBoardId) {
-        return board
-      }
+  const createBoard = useKanbanStore((state) => state.createBoard);
 
-      return {
-        ...board,
-        columns: [
-          ...board.columns,
-          {
-            id: crypto.randomUUID(),
-            name,
-          },
-        ],
-      }
-    })
-  )
-}
+  const renameBoard = useKanbanStore((state) => state.renameBoard);
 
-const handleRenameColumn = (
-  columnId: string,
-  newName: string
-) => {
-  setBoards((prev) =>
-    prev.map((board) => {
-      if (board.id !== activeBoardId) {
-        return board
-      }
+  const deleteBoard = useKanbanStore((state) => state.deleteBoard);
 
-      return {
-        ...board,
-        columns: board.columns.map((column) =>
-          column.id === columnId
-            ? {
-                ...column,
-                name: newName,
-              }
-            : column
-        ),
-      }
-    })
-  )
-}
+  const moveTask = useKanbanStore((state) => state.moveTask);
 
-const handleDeleteColumn = (
-  columnId: string
-) => {
-  setBoards((prev) =>
-    prev.map((board) => {
-      if (board.id !== activeBoardId) {
-        return board
-      }
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
 
-      const fallbackColumn =
-        board.columns.find(
-          (column) => column.id === "todo"
-        ) ?? board.columns[0]
+    if (!over) return;
 
-      if (!fallbackColumn) {
-        return board
-      }
-
-      return {
-        ...board,
-
-        columns: board.columns.filter(
-          (column) => column.id !== columnId
-        ),
-
-        tasks: board.tasks.map((task) =>
-          task.columnId === columnId
-            ? {
-                ...task,
-                columnId: fallbackColumn.id,
-              }
-            : task
-        ),
-      }
-    })
-  )
-}
-
-const handleCreateBoard = (
-  name: string,
-  color: string
-) => {
-  const newBoardId =
-    crypto.randomUUID()
-
-  const newBoard = {
-    id: newBoardId,
-    name,
-    color,
-
-    columns: [
-      {
-        id: "todo",
-        name: "Todo",
-      },
-      {
-        id: "in-progress",
-        name: "In Progress",
-      },
-      {
-        id: "done",
-        name: "Done",
-      },
-    ],
-
-    tasks: [],
-  }
-
-  setBoards((prev) => [
-    ...prev,
-    newBoard,
-  ])
-
-  setActiveBoardId(newBoardId)
-}
-
-const handleRenameBoard = (
-  boardId: string,
-  newName: string
-) => {
-  setBoards((prev) =>
-    prev.map((board) =>
-      board.id === boardId
-        ? {
-            ...board,
-            name: newName,
-          }
-        : board
-    )
-  )
-}
-
-const handleDeleteBoard = (
-  boardId: string
-) => {
-  setBoards((prev) => {
-    const updatedBoards =
-      prev.filter(
-        (board) =>
-          board.id !== boardId
-      )
-
-    if (
-      activeBoardId === boardId &&
-      updatedBoards.length > 0
-    ) {
-      setActiveBoardId(
-        updatedBoards[0].id
-      )
-    }
-
-    return updatedBoards
-  })
-}
-
-const handleDragEnd = (
-  event: DragEndEvent
-) => {
-  const { active, over } = event
-
-  if (!over) return
-
-  setBoards((prev) =>
-    prev.map((board) => {
-      if (board.id !== activeBoardId) {
-        return board
-      }
-
-      return {
-        ...board,
-        tasks: board.tasks.map((task) =>
-          task.id === active.id
-            ? {
-                ...task,
-                columnId: String(over.id),
-              }
-            : task
-        ),
-      }
-    })
-  )
-}
+    moveTask(String(active.id), String(over.id));
+  };
 
   const activeBoard = useMemo(
-    () =>
-      boards.find(
-        (board) => board.id === activeBoardId
-      ),
-    [boards, activeBoardId]
-  )
+    () => boards.find((board) => board.id === activeBoardId),
+    [boards, activeBoardId],
+  );
 
   return (
-    <DndContext
-    onDragEnd={handleDragEnd}
-  >
-    <div className="flex gap-6">
-      <KanbanSidebar
-        boards={boards}
-        activeBoardId={activeBoardId}
-        onSelectBoard={setActiveBoardId}
-        onCreateBoard={handleCreateBoard}
-        onRenameBoard={handleRenameBoard}
-        onDeleteBoard={handleDeleteBoard}
-      />
+    <DndContext onDragEnd={handleDragEnd}>
+      <div className="flex gap-6">
+        <KanbanSidebar
+          boards={boards}
+          activeBoardId={activeBoardId}
+          onSelectBoard={setActiveBoardId}
+          onCreateBoard={createBoard}
+          onRenameBoard={renameBoard}
+          onDeleteBoard={deleteBoard}
+        />
 
-      <div className="flex-1 rounded-xl border border-slate-700/70 bg-[#1F2937]/75 p-6">
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-white">
-            {activeBoard?.name}
-          </h1>
+        <div className="flex-1 rounded-xl border border-slate-700/70 bg-[#1F2937]/75 p-6">
+          <div className="mb-6">
+            <h1 className="text-2xl font-semibold text-white">
+              {activeBoard?.name}
+            </h1>
 
-          <p className="mt-2 text-sm text-slate-400">
-            Kanban board workspace
-          </p>
+            <p className="mt-2 text-sm text-slate-400">
+              Kanban board workspace
+            </p>
+          </div>
+
+          {activeBoard && (
+            <KanbanBoard
+              board={activeBoard}
+              onCreateTask={(boardId, task) => createTask(boardId, task)}
+              onUpdateTask={updateTask}
+              onDeleteTask={deleteTask}
+              onCreateColumn={(name) => createColumn(activeBoardId, name)}
+              onRenameColumn={(columnId, newName) =>
+                renameColumn(activeBoardId, columnId, newName)
+              }
+              onDeleteColumn={(columnId) =>
+                deleteColumn(activeBoardId, columnId)
+              }
+            />
+          )}
         </div>
-
-        {activeBoard && (
-  <KanbanBoard
-  board={activeBoard}
-  onCreateTask={handleCreateTask}
-  onUpdateTask={handleUpdateTask}
-  onDeleteTask={handleDeleteTask}
-  onCreateColumn={handleCreateColumn}
-  onRenameColumn={handleRenameColumn}
-  onDeleteColumn={handleDeleteColumn}
-/>
-)}
       </div>
-    </div>
-  </DndContext>
-  )
+    </DndContext>
+  );
 }
