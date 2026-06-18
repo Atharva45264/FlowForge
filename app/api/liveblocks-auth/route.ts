@@ -1,3 +1,4 @@
+import { auth } from "@clerk/nextjs/server";
 import { Liveblocks } from "@liveblocks/node";
 
 const liveblocks = new Liveblocks({
@@ -5,9 +6,19 @@ const liveblocks = new Liveblocks({
 });
 
 export async function POST() {
-  const session = liveblocks.prepareSession(
-    "atharva"
-  );
+  const { userId } = await auth();
+
+  if (!userId) {
+    return new Response(
+      "Unauthorized",
+      { status: 401 }
+    );
+  }
+
+  const session =
+    liveblocks.prepareSession(
+      userId
+    );
 
   session.allow(
     "*",

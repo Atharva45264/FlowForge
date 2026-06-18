@@ -7,6 +7,9 @@ import { useKanbanStore } from "@/store/kanban-store";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { useCalendarStore } from "@/store/calendar-store";
 import { RoomProvider } from "@liveblocks/react";
+import { Settings } from "lucide-react";
+import { CollaborationDialog }
+from "@/components/kanban/collaboration-dialog";
 import {
   LiveCollaborators,
 } from "@/components/kanban/live-collaborators";
@@ -83,6 +86,7 @@ export default function KanbanPage() {
               <div className="mt-2">
               </div>
               <LiveCollaborators />
+              <CollaborationDialog />
             </div>
 
             {activeBoard && (
