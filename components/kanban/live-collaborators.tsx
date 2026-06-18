@@ -8,10 +8,8 @@ import {
 } from "@liveblocks/react";
 
 export function LiveCollaborators() {
-  const [
-    myPresence,
-    updateMyPresence,
-  ] = useMyPresence();
+  const [, updateMyPresence] =
+  useMyPresence();
   const { user } = useUser();
   useEffect(() => {
   if (!user) return;
@@ -27,29 +25,47 @@ export function LiveCollaborators() {
   const others = useOthers();
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-500 text-sm font-semibold text-white">
-        {
-  (
-    user?.firstName?.[0] ??
-    user?.fullName?.[0] ??
-    "U"
-  ).toUpperCase()
-}
+  <div className="flex items-center justify-between">
+    <div className="flex -space-x-2">
+      <div
+        className="
+          flex h-9 w-9 items-center
+          justify-center rounded-full
+          border-2 border-[#1F2937]
+          bg-indigo-500
+          text-sm font-semibold text-white
+        "
+      >
+        {(
+          user?.firstName?.[0] ??
+          user?.fullName?.[0] ??
+          "U"
+        ).toUpperCase()}
       </div>
 
-      {others.map((user) => (
+      {others.map((other) => (
         <div
-          key={user.connectionId}
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-sm font-semibold text-white"
+          key={other.connectionId}
+          className="
+            flex h-9 w-9 items-center
+            justify-center rounded-full
+            border-2 border-[#1F2937]
+            bg-emerald-500
+            text-sm font-semibold text-white
+          "
         >
-          U
+          {String(
+            other.presence?.name ?? "U"
+          )
+            .charAt(0)
+            .toUpperCase()}
         </div>
       ))}
-
-      <span className="text-xs text-slate-400">
-        {others.length + 1} online
-      </span>
     </div>
-  );
+
+    <span className="text-sm text-slate-400">
+      {others.length + 1} online
+    </span>
+  </div>
+);
 }

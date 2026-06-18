@@ -7,7 +7,6 @@ import { useKanbanStore } from "@/store/kanban-store";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { useCalendarStore } from "@/store/calendar-store";
 import { RoomProvider } from "@liveblocks/react";
-import { LiveblocksDebug } from "@/components/kanban/liveblocks-debug";
 import {
   LiveCollaborators,
 } from "@/components/kanban/live-collaborators";
@@ -82,7 +81,6 @@ export default function KanbanPage() {
               </p>
 
               <div className="mt-2">
-                <LiveblocksDebug />
               </div>
               <LiveCollaborators />
             </div>
