@@ -8,7 +8,16 @@ export type TaskLabel = {
   name: string
   color: string
 }
+export type TaskComment = {
+  id: string
 
+  userId: string
+  userName: string
+
+  message: string
+
+  createdAt: string
+}
 export type KanbanTask = {
   id: string
 
@@ -20,6 +29,8 @@ export type KanbanTask = {
   priority: Priority
 
   labels: TaskLabel[]
+
+  comments?: TaskComment[]
 
   syncCalendar?: boolean
   syncNotes?: boolean

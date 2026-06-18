@@ -1,7 +1,7 @@
 "use client"
 
 import { useDraggable } from "@dnd-kit/core"
-
+import { GripVertical } from "lucide-react";
 import { KanbanTask } from "./kanban-types"
 import { TaskDetailsDialog } from "./task-details-dialog"
 
@@ -48,13 +48,22 @@ export function KanbanCard({
     suppressHydrationWarning
       ref={setNodeRef}
       style={style}
-      {...listeners}
-      {...attributes}
       className="cursor-grab rounded-xl border border-slate-700 bg-slate-800/70 p-3 shadow-sm transition hover:border-indigo-400/40 active:cursor-grabbing"
     >
-      <h3 className="text-sm font-medium text-white">
-        {task.title}
-      </h3>
+      <div className="mb-2 flex items-center justify-between">
+  <h3 className="text-sm font-medium text-white">
+    {task.title}
+  </h3>
+
+  <button
+    type="button"
+    {...listeners}
+    {...attributes}
+    className="cursor-grab text-slate-400 hover:text-white active:cursor-grabbing"
+  >
+    <GripVertical className="h-4 w-4" />
+  </button>
+</div>
 
       <div className="mt-3 flex flex-wrap gap-2">
         {task.labels.map((label) => (

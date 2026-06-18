@@ -4,6 +4,7 @@ import { boards as initialBoards } from "@/components/kanban/sample-data"
 import {
   KanbanBoard,
   KanbanTask,
+  TaskComment,
 } from "@/components/kanban/kanban-types"
 
 type KanbanStore = {
@@ -67,6 +68,16 @@ type KanbanStore = {
     taskId: string,
     targetColumnId: string
   ) => void
+
+  addComment: (
+  taskId: string,
+  comment: Omit<TaskComment, "id">
+) => void
+
+deleteComment: (
+  taskId: string,
+  commentId: string
+) => void
 }
 
 export const useKanbanStore =
@@ -325,6 +336,67 @@ deleteTask: (
                   ...task,
                   columnId:
                     targetColumnId,
+                }
+              : task
+        ),
+      })
+    ),
+  })),
+  addComment: (
+  taskId,
+  comment
+) =>
+  set((state) => ({
+    boards: state.boards.map(
+      (board) => ({
+        ...board,
+
+        tasks: board.tasks.map(
+          (task) =>
+            task.id === taskId
+              ? {
+                  ...task,
+
+                  comments: [
+                    ...(task.comments ??
+                      []),
+
+                    {
+                      id:
+                        crypto.randomUUID(),
+                      ...comment,
+                    },
+                  ],
+                }
+              : task
+        ),
+      })
+    ),
+  })),
+  deleteComment: (
+  taskId,
+  commentId
+) =>
+  set((state) => ({
+    boards: state.boards.map(
+      (board) => ({
+        ...board,
+
+        tasks: board.tasks.map(
+          (task) =>
+            task.id === taskId
+              ? {
+                  ...task,
+
+                  comments:
+                    (
+                      task.comments ??
+                      []
+                    ).filter(
+                      (comment) =>
+                        comment.id !==
+                        commentId
+                    ),
                 }
               : task
         ),
