@@ -14,6 +14,7 @@ import {
   LiveCollaborators,
 } from "@/components/kanban/live-collaborators";
 
+
 export default function KanbanPage() {
   const boards = useKanbanStore((state) => state.boards);
 

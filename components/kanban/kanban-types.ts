@@ -34,7 +34,7 @@ export type KanbanTask = {
 
   syncCalendar?: boolean
   syncNotes?: boolean
-
+  liveblocksThreadId?: string
   columnId: string
 }
 

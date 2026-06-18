@@ -3,6 +3,8 @@
 import { useState } from "react"
 import { useUser } from "@clerk/nextjs"
 import { useKanbanStore } from "@/store/kanban-store"
+import { LiveTaskComments }
+from "./live-task-comments";
 
 import {
   Dialog,
@@ -241,6 +243,7 @@ const handleAddComment = () => {
 </div>
           </div>
         </div>
+        <LiveTaskComments />
       </DialogContent>
     </Dialog>
   )

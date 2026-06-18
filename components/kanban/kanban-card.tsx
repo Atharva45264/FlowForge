@@ -80,6 +80,19 @@ export function KanbanCard({
       </div>
 
       <div className="mt-3">
+        <div className="mt-3 flex items-center gap-2">
+  <span
+    className="
+      rounded-full
+      bg-slate-700
+      px-2 py-1
+      text-[10px]
+      text-slate-300
+    "
+  >
+    💬 {task.comments?.length ?? 0}
+  </span>
+</div>
         <span
           className={`rounded-full px-2 py-1 text-[10px] font-medium ${
             task.priority === "high"
