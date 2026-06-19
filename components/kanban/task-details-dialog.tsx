@@ -3,6 +3,8 @@
 import { useState } from "react"
 import { useUser } from "@clerk/nextjs"
 import { useKanbanStore } from "@/store/kanban-store"
+import { LiveTaskThread }
+from "./live-task-thread";
 import { LiveTaskComments }
 from "./live-task-comments";
 
@@ -243,7 +245,9 @@ const handleAddComment = () => {
 </div>
           </div>
         </div>
-        <LiveTaskComments />
+        <LiveTaskThread
+  taskId={task.id}
+/>
       </DialogContent>
     </Dialog>
   )
