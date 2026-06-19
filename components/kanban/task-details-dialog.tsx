@@ -246,7 +246,10 @@ const handleAddComment = () => {
           </div>
         </div>
         <LiveTaskThread
-  taskId={task.id}
+  taskId={
+    task.liveblocksThreadId ??
+    task.id
+  }
 />
       </DialogContent>
     </Dialog>

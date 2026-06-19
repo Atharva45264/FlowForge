@@ -45,19 +45,20 @@ export function CreateTaskDialog({
     if (!title.trim()) return
 
     onCreateTask({
-      title,
-      description,
-      dueDate: dueDate || undefined,
+  title,
+  description,
+  dueDate: dueDate || undefined,
+  priority,
+  labels: [],
 
-      priority,
+  liveblocksThreadId:
+    crypto.randomUUID(),
 
-      labels: [],
+  syncCalendar,
+  syncNotes,
 
-      syncCalendar,
-      syncNotes,
-
-      columnId,
-    })
+  columnId,
+})
 
     setTitle("")
     setDescription("")
