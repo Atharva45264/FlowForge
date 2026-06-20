@@ -1,14 +1,15 @@
 "use client";
 
+import { useEffect } from "react";
+
 import {
-  Composer,
+  Thread,
 } from "@liveblocks/react-ui";
 
 import {
   useThreads,
   useCreateThread,
 } from "@liveblocks/react";
-
 
 import "@liveblocks/react-ui/styles.css";
 
@@ -24,77 +25,75 @@ export function LiveTaskThread({
   const createThread =
     useCreateThread();
 
-  console.log(
-  "THREADS:",
-  threads
-);
+  const taskThreads =
+    threads.threads?.filter(
+      (thread) =>
+        thread.metadata?.taskId ===
+        taskId
+    ) ?? [];
+
+  useEffect(() => {
+    if (
+      threads.isLoading ||
+      taskThreads.length > 0
+    ) {
+      return;
+    }
+
+    createThread({
+      body: {
+        version: 1,
+        content: [
+          {
+            type: "paragraph",
+            children: [
+              {
+                text:
+                  "Discussion started",
+              },
+            ],
+          },
+        ],
+      },
+
+      metadata: {
+        taskId,
+      },
+    });
+  }, [
+    taskId,
+    taskThreads.length,
+    threads.isLoading,
+    createThread,
+  ]);
 
   return (
     <div className="space-y-4">
       <div
         className="
-          rounded-lg border
-          border-slate-700 p-3
+          rounded-lg
+          border
+          border-slate-700
+          p-3
         "
       >
         <p className="text-sm text-slate-400">
-          Live discussion for:
+          Live Discussion
         </p>
 
-        <div className="mt-2 rounded-lg border border-slate-700 p-3">
-          <p className="text-xs text-slate-400">
-            Thread ID
-          </p>
-
-          <p className="mt-1 break-all text-sm text-white">
-            {taskId}
-          </p>
-        </div>
-
-        <p className="mt-3 text-xs text-slate-400">
-  Threads Found:{" "}
-  {threads.threads?.length ?? 0}
-</p>
+        <p className="mt-2 text-xs text-slate-500">
+          {taskThreads.length}
+          {" "}
+          thread(s)
+        </p>
       </div>
 
-      <button
-        type="button"
-        onClick={() => {
-          createThread({
-            body: {
-              version: 1,
-              content: [
-                {
-                  type: "paragraph",
-                  children: [
-                    {
-                      text:
-                        "Thread created for task " +
-                        taskId,
-                    },
-                  ],
-                },
-              ],
-            },
-
-            metadata: {
-              taskId,
-            },
-          });
-        }}
-        className="
-          rounded-lg
-          bg-indigo-500
-          px-3 py-2
-          text-sm
-          text-white
-          hover:bg-indigo-600
-        "
-      >
-        Create Test Thread
-      </button>
-
-      <Composer />
+      {taskThreads.map((thread) => (
+        <Thread
+          key={thread.id}
+          thread={thread}
+        />
+      ))}
     </div>
   );
 }
