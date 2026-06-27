@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MergingApps } from "./merging-app";
+import { MergingApp } from "./merging-app";
 import { FeatureOrbit } from "./feature-orbit";
 
 export function ReplaceApps() {
@@ -54,7 +54,7 @@ export function ReplaceApps() {
 
         {/* Animated Merge */}
 
-        <FeatureOrbit />
+        <MergingApp />
 
         {/* Bottom Text */}
 

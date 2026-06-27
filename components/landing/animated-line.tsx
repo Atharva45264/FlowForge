@@ -26,19 +26,21 @@ export function AnimatedLine({
       stroke="url(#lineGradient)"
       strokeWidth="2"
       strokeLinecap="round"
+
       initial={{
         pathLength: 0,
         opacity: 0,
       }}
-      whileInView={{
+
+      animate={{
         pathLength: 1,
         opacity: 1,
       }}
+
       transition={{
         duration: 0.8,
         delay,
       }}
-      viewport={{ once: true }}
     />
   );
 }
