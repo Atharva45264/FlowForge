@@ -1,3 +1,5 @@
-export default function Page() {
-  return <div>Coming Soon</div>
+import { NotesLayout } from "@/components/notes/notes-layout";
+
+export default function NotesPage() {
+  return <NotesLayout />;
 }
