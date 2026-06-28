@@ -4,6 +4,9 @@ import type { Metadata } from "next";
 import {
   AppLiveblocksProvider,
 } from "@/components/providers/liveblocks-provider";
+import {
+  QueryProvider,
+} from "@/components/providers/query-provider";
 
 export const metadata: Metadata = {
   title: "FlowForge",
@@ -17,6 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
+      <QueryProvider>
       <html lang="en">
         <body style={{ margin: 0, padding: 0 }}>
           <AppLiveblocksProvider>
@@ -24,6 +28,7 @@ export default function RootLayout({
   </AppLiveblocksProvider>
         </body>
       </html>
+      </QueryProvider>
     </ClerkProvider>
   );
 }
