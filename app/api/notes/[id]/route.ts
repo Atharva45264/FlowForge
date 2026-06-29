@@ -19,8 +19,13 @@ export async function PATCH(
 
     if (!userId) {
       return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
       );
     }
 
@@ -30,24 +35,57 @@ export async function PATCH(
 
     await connectDB();
 
+    // Only allow editable fields
+    const updateData = {
+      title: body.title,
+      content: body.content,
+      isFavorite: body.isFavorite,
+    };
+
     const note = await Note.findOneAndUpdate(
       {
         _id: id,
         ownerId: userId,
       },
-      body,
+      updateData,
       {
         new: true,
+        runValidators: true,
       }
     );
 
-    return NextResponse.json(note);
-  } catch (error) {
-    console.error(error);
+    if (!note) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Note not found",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
 
     return NextResponse.json(
-      { error: "Update failed" },
-      { status: 500 }
+      {
+        success: true,
+        note,
+      },
+      {
+        status: 200,
+      }
+    );
+  } catch (error) {
+    console.error("[UPDATE_NOTE]", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to update note",
+      },
+      {
+        status: 500,
+      }
     );
   }
 }
@@ -61,8 +99,13 @@ export async function DELETE(
 
     if (!userId) {
       return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
       );
     }
 
@@ -70,20 +113,43 @@ export async function DELETE(
 
     await connectDB();
 
-    await Note.findOneAndDelete({
+    const note = await Note.findOneAndDelete({
       _id: id,
       ownerId: userId,
     });
 
-    return NextResponse.json({
-      success: true,
-    });
-  } catch (error) {
-    console.error(error);
+    if (!note) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Note not found",
+        },
+        {
+          status: 404,
+        }
+      );
+    }
 
     return NextResponse.json(
-      { error: "Delete failed" },
-      { status: 500 }
+      {
+        success: true,
+        message: "Note deleted successfully",
+      },
+      {
+        status: 200,
+      }
+    );
+  } catch (error) {
+    console.error("[DELETE_NOTE]", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to delete note",
+      },
+      {
+        status: 500,
+      }
     );
   }
 }

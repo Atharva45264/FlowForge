@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect } from "react";
+
 import {
   FileText,
   Plus,
@@ -7,25 +9,80 @@ import {
   Star,
 } from "lucide-react";
 
-const notes = [
-  {
-    id: 1,
-    title: "Project Roadmap",
-    active: true,
-  },
-  {
-    id: 2,
-    title: "Meeting Notes",
-    active: false,
-  },
-  {
-    id: 3,
-    title: "AI Ideas",
-    active: false,
-  },
-];
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+import {
+  createNote,
+  getNotes,
+} from "@/lib/notes";
+
+import { useNotesStore } from "@/store/notes-store";
 
 export function NotesSidebar() {
+  const queryClient = useQueryClient();
+
+  const {
+    selectedNote,
+    setSelectedNote,
+    search,
+    setSearch,
+    isCreating,
+    setIsCreating,
+  } = useNotesStore();
+
+  const {
+    data: notes = [],
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["notes"],
+    queryFn: getNotes,
+  });
+
+  const createMutation = useMutation({
+    mutationFn: createNote,
+
+    onMutate: () => {
+      setIsCreating(true);
+    },
+
+    onSuccess: (note) => {
+      queryClient.invalidateQueries({
+        queryKey: ["notes"],
+      });
+
+      setSelectedNote(note);
+    },
+
+    onSettled: () => {
+      setIsCreating(false);
+    },
+  });
+
+  // Auto-select first note
+  useEffect(() => {
+    if (
+      notes.length &&
+      !selectedNote
+    ) {
+      setSelectedNote(notes[0]);
+    }
+  }, [
+    notes,
+    selectedNote,
+    setSelectedNote,
+  ]);
+
+  const filteredNotes = notes.filter((note) =>
+    note.title
+      .toLowerCase()
+      .includes(search.toLowerCase())
+  );
+
   return (
     <aside
       className="
@@ -74,6 +131,10 @@ export function NotesSidebar() {
           />
 
           <input
+            value={search}
+            onChange={(e) =>
+              setSearch(e.target.value)
+            }
             placeholder="Search notes..."
             className="
               w-full
@@ -101,21 +162,56 @@ export function NotesSidebar() {
           />
 
           <p className="text-sm font-medium text-slate-400">
-            Favorites
+            Notes
           </p>
 
         </div>
 
       </div>
 
-      {/* Notes List */}
+      {/* Notes */}
 
-      <div className="flex-1 space-y-2 overflow-y-auto px-3">
+      <div className="flex-1 overflow-y-auto px-3">
 
-        {notes.map((note) => (
+        {isLoading && (
+          <div className="space-y-3">
+
+            {[...Array(5)].map((_, i) => (
+              <div
+                key={i}
+                className="
+                  h-12
+                  animate-pulse
+                  rounded-xl
+                  bg-slate-800
+                "
+              />
+            ))}
+
+          </div>
+        )}
+
+        {error && (
+          <div className="px-3 py-5 text-sm text-red-400">
+            Failed to load notes.
+          </div>
+        )}
+
+        {!isLoading &&
+          !filteredNotes.length && (
+            <div className="px-3 py-5 text-sm text-slate-500">
+              No notes found.
+            </div>
+          )}
+
+        {filteredNotes.map((note) => (
           <button
-            key={note.id}
+            key={note._id}
+            onClick={() =>
+              setSelectedNote(note)
+            }
             className={`
+              mb-2
               flex
               w-full
               items-center
@@ -124,18 +220,19 @@ export function NotesSidebar() {
               px-4
               py-3
               text-left
-              transition
+              transition-all
 
               ${
-                note.active
-                  ? "bg-indigo-500 text-white shadow-lg"
-                  : "hover:bg-slate-800 text-slate-300"
+                selectedNote?._id ===
+                note._id
+                  ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20"
+                  : "text-slate-300 hover:bg-slate-800"
               }
             `}
           >
             <FileText size={18} />
 
-            <span className="text-sm font-medium">
+            <span className="truncate text-sm font-medium">
               {note.title}
             </span>
 
@@ -149,6 +246,10 @@ export function NotesSidebar() {
       <div className="border-t border-slate-800 p-4">
 
         <button
+          disabled={isCreating}
+          onClick={() =>
+            createMutation.mutate()
+          }
           className="
             flex
             w-full
@@ -162,11 +263,15 @@ export function NotesSidebar() {
             text-white
             transition
             hover:bg-indigo-600
+            disabled:cursor-not-allowed
+            disabled:opacity-60
           "
         >
           <Plus size={18} />
 
-          New Note
+          {isCreating
+            ? "Creating..."
+            : "New Note"}
 
         </button>
 

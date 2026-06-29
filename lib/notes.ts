@@ -1,46 +1,72 @@
 import { Note } from "@/types/note";
 
+const API = "/api/notes";
+
 export async function getNotes(): Promise<Note[]> {
-  const res = await fetch("/api/notes");
+  const res = await fetch(API);
+
+  const data = await res.json();
 
   if (!res.ok) {
-    throw new Error("Failed");
+    throw new Error(
+      data.message || "Failed to fetch notes"
+    );
   }
 
-  return res.json();
+  return data.notes;
 }
 
-export async function createNote() {
-  const res = await fetch("/api/notes", {
+export async function createNote(): Promise<Note> {
+  const res = await fetch(API, {
     method: "POST",
   });
 
-  return res.json();
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(
+      data.message || "Failed to create note"
+    );
+  }
+
+  return data.note;
 }
 
 export async function updateNote(
   id: string,
-  data: Partial<Note>
-) {
-  const res = await fetch(
-    `/api/notes/${id}`,
-    {
-      method: "PATCH",
-      headers: {
-        "Content-Type":
-          "application/json",
-      },
-      body: JSON.stringify(data),
-    }
-  );
+  note: Partial<Note>
+): Promise<Note> {
+  const res = await fetch(`${API}/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(note),
+  });
 
-  return res.json();
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(
+      data.message || "Failed to update note"
+    );
+  }
+
+  return data.note;
 }
 
 export async function deleteNote(
   id: string
-) {
-  await fetch(`/api/notes/${id}`, {
+): Promise<void> {
+  const res = await fetch(`${API}/${id}`, {
     method: "DELETE",
   });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    throw new Error(
+      data.message || "Failed to delete note"
+    );
+  }
 }

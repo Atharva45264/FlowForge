@@ -10,8 +10,13 @@ export async function GET() {
 
     if (!userId) {
       return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
       );
     }
 
@@ -19,17 +24,35 @@ export async function GET() {
 
     const notes = await Note.find({
       ownerId: userId,
-    }).sort({
-      updatedAt: -1,
-    });
-
-    return NextResponse.json(notes);
-  } catch (error) {
-    console.error(error);
+    })
+      .sort({
+        updatedAt: -1,
+      })
+      .lean();
 
     return NextResponse.json(
-      { error: "Failed to load notes" },
-      { status: 500 }
+      {
+        success: true,
+        notes,
+      },
+      {
+        status: 200,
+      }
+    );
+  } catch (error) {
+    console.error(
+      "[GET_NOTES]",
+      error
+    );
+
+    return NextResponse.json(
+      {
+        success: false,
+        message: "Failed to fetch notes",
+      },
+      {
+        status: 500,
+      }
     );
   }
 }
@@ -40,8 +63,13 @@ export async function POST() {
 
     if (!userId) {
       return NextResponse.json(
-        { error: "Unauthorized" },
-        { status: 401 }
+        {
+          success: false,
+          message: "Unauthorized",
+        },
+        {
+          status: 401,
+        }
       );
     }
 
@@ -51,15 +79,32 @@ export async function POST() {
       title: "Untitled Note",
       content: "",
       ownerId: userId,
+      isFavorite: false,
     });
 
-    return NextResponse.json(note);
+    return NextResponse.json(
+      {
+        success: true,
+        note,
+      },
+      {
+        status: 201,
+      }
+    );
   } catch (error) {
-    console.error(error);
+    console.error(
+      "[CREATE_NOTE]",
+      error
+    );
 
     return NextResponse.json(
-      { error: "Failed to create note" },
-      { status: 500 }
+      {
+        success: false,
+        message: "Failed to create note",
+      },
+      {
+        status: 500,
+      }
     );
   }
 }
