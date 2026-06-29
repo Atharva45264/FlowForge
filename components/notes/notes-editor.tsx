@@ -1,8 +1,11 @@
 "use client";
 
+import { useNotesStore } from "@/store/notes-store";
 import { TipTapEditor } from "./editor/tiptap-editor";
 
 export function NotesEditor() {
+  const { selectedNote } = useNotesStore();
+
   return (
     <div
       className="
@@ -15,6 +18,7 @@ export function NotesEditor() {
       <div
         className="
           mx-auto
+          flex
           h-full
           max-w-5xl
           overflow-hidden
@@ -26,7 +30,21 @@ export function NotesEditor() {
           shadow-[0_20px_60px_rgba(0,0,0,.35)]
         "
       >
-        <TipTapEditor />
+        {selectedNote ? (
+          <TipTapEditor/>
+        ) : (
+          <div className="flex flex-1 items-center justify-center">
+            <div className="text-center">
+              <h2 className="text-xl font-semibold text-white">
+                No Note Selected
+              </h2>
+
+              <p className="mt-2 text-slate-400">
+                Create a new note or select one from the sidebar.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

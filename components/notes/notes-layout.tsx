@@ -9,11 +9,7 @@ export function NotesLayout() {
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden bg-[#0F172A]">
 
-      {/* Sidebar */}
-
       <NotesSidebar />
-
-      {/* Main */}
 
       <div className="flex flex-1 flex-col">
 

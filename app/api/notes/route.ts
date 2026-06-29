@@ -40,21 +40,28 @@ export async function GET() {
       }
     );
   } catch (error) {
-    console.error(
-      "[GET_NOTES]",
-      error
-    );
+  console.error("[GET_NOTES]", error);
 
-    return NextResponse.json(
-      {
-        success: false,
-        message: "Failed to fetch notes",
-      },
-      {
-        status: 500,
-      }
-    );
-  }
+  return NextResponse.json(
+    {
+      success: false,
+      message:
+        error instanceof Error
+          ? error.message
+          : "Unknown error",
+
+      stack:
+        process.env.NODE_ENV === "development"
+          ? error instanceof Error
+            ? error.stack
+            : null
+          : undefined,
+    },
+    {
+      status: 500,
+    }
+  );
+}
 }
 
 export async function POST() {
