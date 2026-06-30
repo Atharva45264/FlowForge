@@ -16,6 +16,8 @@ import { getNotes } from "@/lib/notes";
 import { useNotesStore } from "@/store/notes-store";
 import { useUpdateNote } from "@/hooks/notes/use-update-note";
 import { useToggleFavorite } from "@/hooks/notes/use-toggle-favorite";
+import { useDeleteNote } from "@/hooks/notes/use-delete-note";
+import { DeleteNoteDialog } from "./delete-note-dialog";
 
 export function NotesHeader() {
   const { selectedNoteId } = useNotesStore();
@@ -24,6 +26,12 @@ export function NotesHeader() {
 
   const favoriteMutation =
   useToggleFavorite();
+
+  const deleteMutation =
+  useDeleteNote();
+
+const [deleteOpen, setDeleteOpen] =
+  useState(false);
 
   const { data: notes = [] } = useQuery({
     queryKey: ["notes"],
@@ -212,18 +220,34 @@ export function NotesHeader() {
         </button>
 
         <button
-          className="
-            rounded-xl
-            border
-            border-slate-700
-            bg-slate-900
-            p-2.5
-            transition
-            hover:border-red-500
-          "
-        >
-          <Trash2 size={18} />
-        </button>
+  onClick={() => setDeleteOpen(true)}
+  className="
+    rounded-xl
+    border
+    border-slate-700
+    bg-slate-900
+    p-2.5
+    transition
+    hover:border-red-500
+  "
+>
+  <Trash2 size={18} />
+</button>
+<DeleteNoteDialog
+  open={deleteOpen}
+  onOpenChange={setDeleteOpen}
+  title={selectedNote?.title || "Untitled Note"}
+  loading={deleteMutation.isPending}
+  onDelete={async () => {
+    if (!selectedNote?._id) return;
+
+    await deleteMutation.mutateAsync(
+      selectedNote._id
+    );
+
+    setDeleteOpen(false);
+  }}
+/>
 
       </div>
 

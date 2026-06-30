@@ -75,20 +75,25 @@ export function NotesSidebar() {
   });
 
   useEffect(() => {
-    if (
-      notes.length > 0 &&
-      (!selectedNoteId ||
-        !notes.some(
-          (n) => n._id === selectedNoteId
-        ))
-    ) {
-      setSelectedNoteId(notes[0]._id!);
+  if (!notes.length) {
+    if (selectedNoteId !== null) {
+      setSelectedNoteId(null);
     }
-  }, [
-    notes,
-    selectedNoteId,
-    setSelectedNoteId,
-  ]);
+    return;
+  }
+
+  const exists = notes.some(
+    (n) => n._id === selectedNoteId
+  );
+
+  if (!exists) {
+    const firstId = notes[0]._id!;
+
+    if (firstId !== selectedNoteId) {
+      setSelectedNoteId(firstId);
+    }
+  }
+}, [notes]);
 
   const filteredNotes = notes.filter((note) =>
   note.title

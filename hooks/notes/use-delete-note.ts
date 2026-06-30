@@ -6,35 +6,26 @@ import {
 } from "@tanstack/react-query";
 
 import { deleteNote } from "@/lib/notes";
-import { useNotesStore } from "@/store/notes-store";
 import { Note } from "@/types/note";
 
 export function useDeleteNote() {
   const queryClient = useQueryClient();
 
-  const { setSelectedNote } = useNotesStore();
-
   return useMutation({
-    mutationFn: (id: string) =>
-      deleteNote(id),
+    mutationFn: deleteNote,
 
-    onSuccess: (_data, id) => {
+    onSuccess: (_, deletedId) => {
       queryClient.setQueryData<Note[]>(
         ["notes"],
-        (old = []) => {
-          const updated = old.filter(
-            (note) => note._id !== id
-          );
-
-          setSelectedNote(
-            updated.length
-              ? updated[0]
-              : null
-          );
-
-          return updated;
-        }
+        (old = []) =>
+          old.filter(
+            (note) => note._id !== deletedId
+          )
       );
+
+      queryClient.invalidateQueries({
+        queryKey: ["notes"],
+      });
     },
   });
 }

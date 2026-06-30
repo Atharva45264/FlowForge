@@ -33,6 +33,10 @@ export function useToggleFavorite() {
               : note
           )
       );
+
+      queryClient.invalidateQueries({
+        queryKey: ["notes"],
+      });
     },
   });
 }
