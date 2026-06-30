@@ -8,40 +8,30 @@ import {
 import { updateNote } from "@/lib/notes";
 import { Note } from "@/types/note";
 
-export function useUpdateNote() {
+export function useToggleFavorite() {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: ({
       id,
-      note,
+      isFavorite,
     }: {
       id: string;
-      note: Partial<Note>;
-    }) => updateNote(id, note),
+      isFavorite: boolean;
+    }) =>
+      updateNote(id, {
+        isFavorite,
+      }),
 
     onSuccess: (updatedNote) => {
       queryClient.setQueryData<Note[]>(
         ["notes"],
         (old = []) =>
-          old.map((n) =>
-            n._id === updatedNote._id
+          old.map((note) =>
+            note._id === updatedNote._id
               ? updatedNote
-              : n
+              : note
           )
-      );
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["notes"],
-      });
-    },
-
-    onError: (error) => {
-      console.error(
-        "[UPDATE_NOTE]",
-        error
       );
     },
   });

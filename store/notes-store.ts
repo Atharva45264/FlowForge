@@ -1,12 +1,10 @@
 import { create } from "zustand";
 
-import { Note } from "@/types/note";
-
 interface NotesStore {
-  selectedNote: Note | null;
+  selectedNoteId: string | null;
 
-  setSelectedNote: (
-    note: Note | null
+  setSelectedNoteId: (
+    id: string | null
   ) => void;
 
   search: string;
@@ -24,11 +22,11 @@ interface NotesStore {
 
 export const useNotesStore =
   create<NotesStore>((set) => ({
-    selectedNote: null,
+    selectedNoteId: null,
 
-    setSelectedNote: (note) =>
+    setSelectedNoteId: (id) =>
       set({
-        selectedNote: note,
+        selectedNoteId: id,
       }),
 
     search: "",

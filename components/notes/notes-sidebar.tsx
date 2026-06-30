@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 
+
 import {
   FileText,
   Plus,
@@ -25,9 +26,11 @@ import { useNotesStore } from "@/store/notes-store";
 export function NotesSidebar() {
   const queryClient = useQueryClient();
 
+  
+
   const {
-    selectedNote,
-    setSelectedNote,
+    selectedNoteId,
+    setSelectedNoteId,
     search,
     setSearch,
     isCreating,
@@ -51,37 +54,55 @@ export function NotesSidebar() {
     },
 
     onSuccess: (note) => {
-      queryClient.invalidateQueries({
-        queryKey: ["notes"],
-      });
+      queryClient.setQueryData(
+        ["notes"],
+        (old: typeof notes = []) => [
+          note,
+          ...old,
+        ]
+      );
 
-      setSelectedNote(note);
+      setSelectedNoteId(note._id!);
     },
 
     onSettled: () => {
       setIsCreating(false);
+
+      queryClient.invalidateQueries({
+        queryKey: ["notes"],
+      });
     },
   });
 
-  // Auto-select first note
   useEffect(() => {
     if (
-      notes.length &&
-      !selectedNote
+      notes.length > 0 &&
+      (!selectedNoteId ||
+        !notes.some(
+          (n) => n._id === selectedNoteId
+        ))
     ) {
-      setSelectedNote(notes[0]);
+      setSelectedNoteId(notes[0]._id!);
     }
   }, [
     notes,
-    selectedNote,
-    setSelectedNote,
+    selectedNoteId,
+    setSelectedNoteId,
   ]);
 
   const filteredNotes = notes.filter((note) =>
-    note.title
-      .toLowerCase()
-      .includes(search.toLowerCase())
-  );
+  note.title
+    .toLowerCase()
+    .includes(search.toLowerCase())
+);
+
+const favoriteNotes = filteredNotes.filter(
+  (note) => note.isFavorite
+);
+
+const normalNotes = filteredNotes.filter(
+  (note) => !note.isFavorite
+);
 
   return (
     <aside
@@ -150,7 +171,7 @@ export function NotesSidebar() {
 
       </div>
 
-      {/* Favorites */}
+      {/* Section */}
 
       <div className="px-5">
 
@@ -192,23 +213,24 @@ export function NotesSidebar() {
         )}
 
         {error && (
-          <div className="px-3 py-5 text-sm text-red-400">
+          <div className="px-3 py-4 text-sm text-red-400">
             Failed to load notes.
           </div>
         )}
 
         {!isLoading &&
           !filteredNotes.length && (
-            <div className="px-3 py-5 text-sm text-slate-500">
+            <div className="px-3 py-4 text-sm text-slate-500">
               No notes found.
             </div>
           )}
 
         {filteredNotes.map((note) => (
+
           <button
             key={note._id}
             onClick={() =>
-              setSelectedNote(note)
+              setSelectedNoteId(note._id!)
             }
             className={`
               mb-2
@@ -223,20 +245,34 @@ export function NotesSidebar() {
               transition-all
 
               ${
-                selectedNote?._id ===
-                note._id
+                selectedNoteId === note._id
                   ? "bg-indigo-500 text-white shadow-lg shadow-indigo-500/20"
                   : "text-slate-300 hover:bg-slate-800"
               }
             `}
           >
-            <FileText size={18} />
 
-            <span className="truncate text-sm font-medium">
-              {note.title}
-            </span>
+            <FileText
+              size={18}
+              className="shrink-0"
+            />
+
+            <div className="min-w-0 flex-1">
+
+              <p className="truncate text-sm font-medium">
+                {note.title}
+              </p>
+
+              <p className="mt-1 text-xs text-slate-400">
+                {new Date(
+                  note.updatedAt
+                ).toLocaleString()}
+              </p>
+
+            </div>
 
           </button>
+
         ))}
 
       </div>
@@ -263,10 +299,10 @@ export function NotesSidebar() {
             text-white
             transition
             hover:bg-indigo-600
-            disabled:cursor-not-allowed
-            disabled:opacity-60
+            disabled:opacity-50
           "
         >
+
           <Plus size={18} />
 
           {isCreating

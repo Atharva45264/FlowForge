@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
 import {
   useEditor,
   EditorContent,
@@ -10,172 +9,124 @@ import {
 import { editorExtensions } from "./extensions";
 import { Toolbar } from "./toolbar";
 
-import { useNotesStore } from "@/store/notes-store";
+import { Note } from "@/types/note";
 import { useUpdateNote } from "@/hooks/notes/use-update-note";
 import { useEditorAutosave } from "./use-editor-autosave";
 
-export function TipTapEditor() {
+type Props = {
+  note: Note;
+};
 
-  const { selectedNote } =
-    useNotesStore();
-
-  const updateMutation =
-    useUpdateNote();
+export function TipTapEditor({
+  note,
+}: Props) {
+  const updateMutation = useUpdateNote();
 
   const [saving, setSaving] =
     useState(false);
 
-  const editor = useEditor({
-    extensions: editorExtensions,
+  const editor = useEditor(
+    {
+      extensions: editorExtensions,
 
-    content:
-      "<h1>Welcome to FlowForge</h1>",
+      content: note.content || "",
 
-    immediatelyRender: false,
+      immediatelyRender: false,
 
-    editorProps: {
-      attributes: {
-        class:
-          "focus:outline-none min-h-full",
+      editorProps: {
+        attributes: {
+          class:
+            "focus:outline-none h-full",
+        },
       },
     },
-  });
-
-  /*
-  ------------------------------------
-  LOAD NOTE
-  ------------------------------------
-  */
+    // ⭐ THIS IS THE IMPORTANT FIX
+    [note._id]
+  );
 
   useEffect(() => {
+  if (!editor || editor.isDestroyed) return;
 
-    if (!editor) return;
+  requestAnimationFrame(() => {
+    if (!editor || editor.isDestroyed) return;
 
-    if (!selectedNote) {
+    const current = editor.getHTML();
 
-      editor.commands.setContent("");
-
-      return;
-
+    if (current !== note.content) {
+      editor.commands.setContent(note.content || "");
     }
-
-    if (
-      editor.getHTML() !==
-      selectedNote.content
-    ) {
-      editor.commands.setContent(
-        selectedNote.content || ""
-      );
-    }
-
-  }, [
-    selectedNote,
-    editor,
-  ]);
-
-  /*
-  ------------------------------------
-  AUTOSAVE
-  ------------------------------------
-  */
+  });
+}, [note._id, note.content, editor]);
 
   useEditorAutosave({
-
-    enabled:
-      !!selectedNote && !!editor,
+    enabled: !!editor,
 
     dependencies: [
+      note._id,
       editor?.getHTML(),
-      selectedNote?._id,
     ],
 
     callback: async () => {
-
-      if (
-        !editor ||
-        !selectedNote?._id
-      )
-        return;
+      if (!editor) return;
 
       const html =
         editor.getHTML();
 
       if (
-        html ===
-        selectedNote.content
+        html === note.content
       )
         return;
 
       setSaving(true);
 
       try {
-
         await updateMutation.mutateAsync({
-
-          id: selectedNote._id,
-
+          id: note._id!,
           note: {
-
             content: html,
-
-            title:
-              editor
-                .getText()
-                .split("\n")[0]
-                .slice(0, 50) ||
-              "Untitled Note",
-
           },
-
         });
-
       } finally {
-
         setSaving(false);
-
       }
-
     },
-
   });
 
   if (!editor) return null;
 
   return (
-
-    <div className="flex h-full flex-col">
+    <div className="flex h-full w-full flex-col">
 
       <Toolbar
         editor={editor}
         saving={saving}
       />
 
-      <EditorContent
-        editor={editor}
-        className="
-          prose
-          prose-invert
-          prose-headings:text-white
-          prose-p:text-slate-300
-          prose-strong:text-white
-          prose-code:text-violet-300
-          prose-blockquote:border-violet-500
-          max-w-none
-          flex-1
-          overflow-y-auto
-          px-12
-          py-10
+      <div className="flex-1 overflow-hidden">
 
-          [&_.ProseMirror]:min-h-225
-          [&_.ProseMirror]:outline-none
-          [&_.ProseMirror]:text-lg
-          [&_.ProseMirror]:leading-8
-          [&_.ProseMirror]:caret-violet-500
-        "
-      />
+        <EditorContent
+          editor={editor}
+          className="
+            prose
+            prose-invert
+            max-w-none
+            h-full
+            overflow-y-auto
+            px-10
+            py-10
+            lg:px-14
+            xl:px-20
+
+            [&_.ProseMirror]:min-h-full
+            [&_.ProseMirror]:h-full
+            [&_.ProseMirror]:outline-none
+            [&_.ProseMirror]:text-lg
+            [&_.ProseMirror]:leading-8
+          "
+        />
+
+      </div>
 
     </div>
-
   );
-
 }

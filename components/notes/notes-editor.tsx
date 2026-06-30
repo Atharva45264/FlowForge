@@ -1,26 +1,43 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+
+import { getNotes } from "@/lib/notes";
 import { useNotesStore } from "@/store/notes-store";
+
 import { TipTapEditor } from "./editor/tiptap-editor";
 
 export function NotesEditor() {
-  const { selectedNote } = useNotesStore();
+  const { selectedNoteId } =
+    useNotesStore();
 
+  const { data: notes = [] } =
+    useQuery({
+      queryKey: ["notes"],
+      queryFn: getNotes,
+    });
+
+  const selectedNote = notes.find(
+    (note) => note._id === selectedNoteId
+  );
+console.log("Selected Note ID:", selectedNoteId);
+console.log("Selected Note:", selectedNote);
   return (
     <div
       className="
         flex-1
         overflow-hidden
         bg-[#111827]
-        p-8
+        px-8
+        py-6
+        pr-5
       "
     >
       <div
         className="
-          mx-auto
           flex
           h-full
-          max-w-5xl
+          w-full
           overflow-hidden
           rounded-3xl
           border
@@ -31,15 +48,18 @@ export function NotesEditor() {
         "
       >
         {selectedNote ? (
-          <TipTapEditor/>
+          <TipTapEditor
+  key={selectedNote._id}
+  note={selectedNote}
+/>
         ) : (
           <div className="flex flex-1 items-center justify-center">
             <div className="text-center">
-              <h2 className="text-xl font-semibold text-white">
+              <h2 className="text-2xl font-semibold text-white">
                 No Note Selected
               </h2>
 
-              <p className="mt-2 text-slate-400">
+              <p className="mt-3 text-slate-400">
                 Create a new note or select one from the sidebar.
               </p>
             </div>
