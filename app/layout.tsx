@@ -7,6 +7,7 @@ import {
 import {
   QueryProvider,
 } from "@/components/providers/query-provider";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "FlowForge",
@@ -26,9 +27,14 @@ export default function RootLayout({
           <AppLiveblocksProvider>
     {children}
   </AppLiveblocksProvider>
+  <Toaster
+  richColors
+  position="bottom-right"
+/>
         </body>
       </html>
       </QueryProvider>
     </ClerkProvider>
+    
   );
 }

@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 
 import { useQuery } from "@tanstack/react-query";
-
+import { toast } from "sonner";
 import { getNotes } from "@/lib/notes";
 import { useNotesStore } from "@/store/notes-store";
 import { useUpdateNote } from "@/hooks/notes/use-update-note";
@@ -206,18 +206,30 @@ const [deleteOpen, setDeleteOpen] =
   />
 </button>
         <button
-          className="
-            rounded-xl
-            border
-            border-slate-700
-            bg-slate-900
-            p-2.5
-            transition
-            hover:border-indigo-400
-          "
-        >
-          <Share2 size={18} />
-        </button>
+  onClick={async () => {
+    if (!selectedNote) return;
+
+    const url =
+      `${window.location.origin}/notes/${selectedNote._id}`;
+
+    await navigator.clipboard.writeText(url);
+
+    toast.success(
+      "Note link copied!"
+    );
+  }}
+  className="
+    rounded-xl
+    border
+    border-slate-700
+    bg-slate-900
+    p-2.5
+    transition
+    hover:border-indigo-400
+  "
+>
+  <Share2 size={18} />
+</button>
 
         <button
   onClick={() => setDeleteOpen(true)}
