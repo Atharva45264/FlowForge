@@ -15,10 +15,10 @@ import {
   User,
   Bot,
 } from "lucide-react";
-
+import { useKanbanStore } from "@/store/kanban-store";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-
+import { ClipboardList } from "lucide-react";
 import { useAI } from "@/hooks/use-ai";
 import { useAIStore } from "@/store/ai-store";
 import { useEditorStore } from "@/store/editor-store";
@@ -42,6 +42,15 @@ const actions = [
     icon: PenSquare,
     color: "bg-emerald-500/15 text-emerald-300",
   },
+  {
+    title: "Generate Tasks",
+
+    action: "generateTasks",
+
+    icon: ClipboardList,
+
+    color: "bg-orange-500/20 text-orange-300",
+  },
 ] as const;
 
 export function AIPanel() {
@@ -55,32 +64,56 @@ export function AIPanel() {
 
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  const activeBoardId = useKanbanStore((state) => state.activeBoardId);
+
+  const createTask = useKanbanStore((state) => state.createTask);
+
+  const [generatedTasks, setGeneratedTasks] =
+  useState<any[]>([]);
+
   useEffect(() => {
     bottomRef.current?.scrollIntoView({
       behavior: "smooth",
     });
   }, [messages]);
 
-  async function runAction(action: "summarize" | "improve" | "continue") {
-    if (!note.trim()) return;
+  async function runAction(
+  action:
+    | "summarize"
+    | "improve"
+    | "continue"
+    | "generateTasks"
+) {
+  if (!note.trim()) return;
+
+  addMessage({
+    role: "user",
+    content: action,
+  });
+
+  const res = await ai.mutateAsync({
+    action,
+    note,
+  });
+
+  if (!res.success) return;
+
+  if (res.type === "text") {
+    addMessage({
+      role: "assistant",
+      content: res.result,
+    });
+  }
+
+  if (res.type === "tasks") {
+    setGeneratedTasks(res.tasks);
 
     addMessage({
-      role: "user",
-      content: action,
+      role: "assistant",
+      content: `Generated ${res.tasks.length} tasks successfully.`,
     });
-
-    const res = await ai.mutateAsync({
-      action,
-      note,
-    });
-
-    if (res.success) {
-      addMessage({
-        role: "assistant",
-        content: res.result,
-      });
-    }
   }
+}
 
   async function askAI() {
     if (!question.trim() || !note.trim()) return;
@@ -114,7 +147,7 @@ export function AIPanel() {
     <aside
       className="
         flex
-        w-80
+        w-96
         flex-col
         border-l
         border-slate-800
@@ -178,7 +211,16 @@ export function AIPanel() {
 
       {/* CONVERSATION */}
 
-      <div className="flex-1 overflow-y-auto p-5 space-y-5">
+      <div
+  className="
+    flex-1
+    min-h-0
+    overflow-y-auto
+    px-5
+    py-4
+    space-y-4
+  "
+>
         {messages.length === 0 && (
           <div className="flex h-full flex-col items-center justify-center text-center">
             <Sparkles className="mb-4 h-12 w-12 text-violet-400" />
@@ -318,86 +360,159 @@ export function AIPanel() {
 
         {latestAssistant && (
           <div
-            className="
-            rounded-2xl
-            border
-            border-slate-700
-            bg-slate-900
-            p-4
-          "
-          >
-            <p className="mb-3 font-semibold text-white">AI Actions</p>
+  className="
+    mt-3
+    rounded-xl
+    border
+    border-slate-700
+    bg-slate-900/70
+    p-3
+  "
+>
+  <p className="mb-3 text-sm font-semibold text-white">
+    AI Actions
+  </p>
 
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  if (!editor) return;
+  <div className="grid grid-cols-2 gap-2">
 
-                  editor
-                    .chain()
-                    .focus()
-                    .setContent(latestAssistant.content)
-                    .run();
-                }}
-                className="
-                flex-1
-                rounded-xl
-                bg-violet-600
-                py-2
-                text-sm
-                font-medium
-                text-white
-                transition
-                hover:bg-violet-700
-              "
-              >
-                <Replace className="mr-2 inline h-4 w-4" />
-                Replace
-              </button>
+    <button
+      onClick={() => {
+        if (!editor) return;
 
-              <button
-                onClick={() => {
-                  if (!editor) return;
+        editor
+          .chain()
+          .focus()
+          .setContent(latestAssistant.content)
+          .run();
+      }}
+      className="
+        flex
+        items-center
+        justify-center
+        gap-2
+        rounded-lg
+        bg-violet-600
+        py-2
+        text-sm
+        text-white
+        hover:bg-violet-700
+      "
+    >
+      <Replace className="h-4 w-4" />
+      Replace
+    </button>
 
-                  editor
-                    .chain()
-                    .focus()
-                    .insertContent(latestAssistant.content)
-                    .run();
-                }}
-                className="
-                flex-1
-                rounded-xl
-                bg-emerald-600
-                py-2
-                text-sm
-                font-medium
-                text-white
-                transition
-                hover:bg-emerald-700
-              "
-              >
-                <Plus className="mr-2 inline h-4 w-4" />
-                Append
-              </button>
+    <button
+      onClick={() => {
+        if (!editor) return;
 
-              <button
-                onClick={() =>
-                  navigator.clipboard.writeText(latestAssistant.content)
-                }
-                className="
-                rounded-xl
-                border
-                border-slate-700
-                px-3
-                transition
-                hover:bg-slate-800
-              "
-              >
-                <Copy className="h-4 w-4 text-white" />
-              </button>
-            </div>
-          </div>
+        editor
+          .chain()
+          .focus()
+          .insertContent(latestAssistant.content)
+          .run();
+      }}
+      className="
+        flex
+        items-center
+        justify-center
+        gap-2
+        rounded-lg
+        bg-emerald-600
+        py-2
+        text-sm
+        text-white
+        hover:bg-emerald-700
+      "
+    >
+      <Plus className="h-4 w-4" />
+      Append
+    </button>
+
+    <button
+      onClick={() =>
+        navigator.clipboard.writeText(
+          latestAssistant.content
+        )
+      }
+      className="
+        flex
+        items-center
+        justify-center
+        gap-2
+        rounded-lg
+        border
+        border-slate-700
+        bg-slate-800
+        py-2
+        text-sm
+        text-white
+        hover:bg-slate-700
+      "
+    >
+      <Copy className="h-4 w-4" />
+      Copy
+    </button>
+
+    <button
+      onClick={() => {
+        if (!latestAssistant) return;
+
+        try {
+          const tasks = JSON.parse(
+            latestAssistant.content
+          );
+
+          tasks.forEach((task: any) => {
+            const priority =
+              ["low", "medium", "high"].includes(
+                task.priority?.toLowerCase()
+              )
+                ? task.priority.toLowerCase()
+                : "medium";
+
+            createTask(activeBoardId, {
+              title: task.title,
+              description:
+                task.description || "",
+              priority,
+              columnId: "todo",
+              dueDate:
+                task.dueDate || undefined,
+              labels: [],
+              comments: [],
+              syncCalendar: false,
+              syncNotes: true,
+            });
+          });
+
+          alert(
+            `${tasks.length} tasks created!`
+          );
+
+        } catch {
+          alert("Invalid AI JSON");
+        }
+      }}
+      className="
+        flex
+        items-center
+        justify-center
+        gap-2
+        rounded-lg
+        bg-orange-600
+        py-2
+        text-sm
+        text-white
+        hover:bg-orange-700
+      "
+    >
+      <ClipboardList className="h-4 w-4" />
+      Create
+    </button>
+
+  </div>
+</div>
         )}
       </div>
 
@@ -407,26 +522,26 @@ export function AIPanel() {
         <p className="mb-3 text-sm font-medium text-slate-400">Ask AI</p>
 
         <textarea
-          rows={4}
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          placeholder="Ask AI anything about this note..."
-          className="
-            w-full
-            resize-none
-            rounded-2xl
-            border
-            border-slate-700
-            bg-slate-900
-            p-4
-            text-sm
-            text-white
-            placeholder:text-slate-500
-            outline-none
-            transition
-            focus:border-violet-500
-          "
-        />
+  rows={2}
+  value={question}
+  onChange={(e) => setQuestion(e.target.value)}
+  placeholder="Ask AI..."
+  className="
+    h-20
+    w-full
+    resize-none
+    rounded-xl
+    border
+    border-slate-700
+    bg-slate-900
+    p-3
+    text-sm
+    text-white
+    placeholder:text-slate-500
+    outline-none
+    focus:border-violet-500
+  "
+/>
 
         <button
           onClick={askAI}

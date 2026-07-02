@@ -15,7 +15,8 @@ export function useAI() {
         | "summarize"
         | "improve"
         | "continue"
-        | "ask";
+        | "ask"
+        | "generateTasks";
 
       note: string;
 
@@ -39,7 +40,13 @@ export function useAI() {
         }
       );
 
-      return res.json();
+      const data = await res.json();
+
+if (!res.ok) {
+  throw new Error(data.message);
+}
+
+return data;
     },
   });
 }

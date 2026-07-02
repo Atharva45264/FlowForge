@@ -2,7 +2,8 @@ export type AIAction =
   | "summarize"
   | "improve"
   | "continue"
-  | "ask";
+  | "ask"
+  | "generateTasks";
 
 export function buildPrompt(
   action: AIAction,
@@ -10,6 +11,41 @@ export function buildPrompt(
   question?: string
 ) {
   switch (action) {
+    case "generateTasks":
+
+return `
+You are an expert project manager.
+
+Extract every actionable task.
+
+Return ONLY valid JSON.
+
+Example:
+
+[
+ {
+   "title":"Create Login UI",
+   "description":"Design responsive login page",
+
+   "priority":"High"
+ },
+
+ {
+   "title":"Setup JWT",
+
+   "description":"Implement authentication",
+
+   "priority":"Medium"
+ }
+
+]
+
+Do not explain.
+
+Return JSON only.
+
+${note}
+`;
     case "summarize":
       return `
 Summarize the following note.

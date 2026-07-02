@@ -1,13 +1,9 @@
 import { NextResponse } from "next/server";
 
 import { groq } from "@/lib/groq";
-import {
-  buildPrompt,
-} from "@/lib/ai-prompts";
+import { buildPrompt } from "@/lib/ai-prompts";
 
-export async function POST(
-  req: Request
-) {
+export async function POST(req: Request) {
   try {
     const {
       action,
@@ -23,8 +19,7 @@ export async function POST(
 
     const completion =
       await groq.chat.completions.create({
-        model:
-          "llama-3.3-70b-versatile",
+        model: "llama-3.3-70b-versatile",
 
         messages: [
           {
@@ -36,18 +31,45 @@ export async function POST(
         temperature: 0.4,
       });
 
+    const content =
+      completion.choices[0].message.content ?? "";
+
+    if (action === "generateTasks") {
+      try {
+        const tasks = JSON.parse(content);
+
+        return NextResponse.json({
+          success: true,
+          type: "tasks",
+          tasks,
+        });
+      } catch {
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              "AI returned invalid JSON.",
+          },
+          {
+            status: 500,
+          }
+        );
+      }
+    }
+
     return NextResponse.json({
       success: true,
-      result:
-        completion.choices[0].message
-          .content,
+      type: "text",
+      result: content,
     });
+
   } catch (error) {
-    console.error(error);
+    console.error("[AI]", error);
 
     return NextResponse.json(
       {
         success: false,
+        message: "AI request failed.",
       },
       {
         status: 500,
