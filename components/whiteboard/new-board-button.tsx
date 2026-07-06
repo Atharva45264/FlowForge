@@ -1,26 +1,37 @@
 "use client";
 
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+
 import { useWhiteboard } from "@/hooks/use-whiteboard";
 
 export function NewBoardButton() {
+  const router = useRouter();
+
   const {
     createBoard,
     setSelectedBoard,
   } = useWhiteboard();
 
   async function handleCreate() {
-    try {
-      const board = await createBoard();
+  try {
+    const board = await createBoard();
 
-      setSelectedBoard(board);
+    console.log("===========");
+    console.log(board);
+    console.log("ID:", board?._id);
+    console.log("===========");
 
-      // We'll navigate to /whiteboard/[id]
-      // once dynamic routing is added.
-    } catch (error) {
-      console.error(error);
+    if (!board?._id) {
+      alert("Board ID is undefined");
+      return;
     }
+
+    router.push(`/whiteboard/${board._id}`);
+  } catch (error) {
+    console.error(error);
   }
+}
 
   return (
     <button
@@ -28,15 +39,16 @@ export function NewBoardButton() {
       className="
         group
         flex
-        h-12
         w-full
         items-center
         justify-center
         gap-2
-        rounded-2xl
+        rounded-xl
         bg-linear-to-r
         from-violet-600
-        to-indigo-600
+        to-purple-600
+        px-4
+        py-3
         font-medium
         text-white
         transition-all
@@ -48,13 +60,8 @@ export function NewBoardButton() {
       "
     >
       <Plus
-        className="
-          h-5
-          w-5
-          transition-transform
-          duration-200
-          group-hover:rotate-90
-        "
+        size={18}
+        className="transition-transform duration-200 group-hover:rotate-90"
       />
 
       <span>New Whiteboard</span>

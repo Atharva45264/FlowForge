@@ -20,13 +20,13 @@ export function useWhiteboard() {
   mutationFn: WhiteboardAPI.createBoard,
 
   onSuccess: (board) => {
-    toast.success("Whiteboard created");
+    store.setSelectedBoard(board);
 
     queryClient.invalidateQueries({
       queryKey: ["whiteboards"],
     });
 
-    store.setSelectedBoard(board);
+    toast.success("Whiteboard created");
   },
 });
 

@@ -1,8 +1,6 @@
 "use client";
-
-import { useMemo } from "react";
 import { useRouter } from "next/navigation";
-
+import { useEffect, useMemo } from "react";
 import { BoardCard } from "./board-card";
 import { useWhiteboard } from "@/hooks/use-whiteboard";
 
@@ -26,6 +24,12 @@ export function BoardList() {
         .includes(search.toLowerCase())
     );
   }, [boards, search]);
+
+  useEffect(() => {
+  if (!selectedBoard && boards.length > 0) {
+    setSelectedBoard(boards[0]);
+  }
+}, [boards, selectedBoard, setSelectedBoard]);
 
   if (loading) {
     return (

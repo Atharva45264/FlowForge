@@ -7,7 +7,14 @@ import {
   Star,
 } from "lucide-react";
 
+import { useWhiteboard } from "@/hooks/use-whiteboard";
+
 export function WhiteboardTopbar() {
+  const {
+    selectedBoard,
+    saving,
+  } = useWhiteboard();
+
   return (
     <header
       className="
@@ -22,41 +29,32 @@ export function WhiteboardTopbar() {
       "
     >
       <div>
-
         <h1 className="text-2xl font-bold text-white">
-
-          Project Brainstorm
-
+          {selectedBoard?.title ?? "Untitled Whiteboard"}
         </h1>
 
         <p className="text-sm text-slate-400">
-
-          Saved just now
-
+          {saving ? "Saving..." : "Saved"}
         </p>
-
       </div>
 
       <div className="flex gap-3">
-
-        <button className="rounded-xl border border-slate-700 p-2.5">
+        <button className="rounded-xl border border-slate-700 p-2.5 hover:bg-slate-800">
           <Star size={18} />
         </button>
 
-        <button className="rounded-xl border border-slate-700 p-2.5">
+        <button className="rounded-xl border border-slate-700 p-2.5 hover:bg-slate-800">
           <Sparkles size={18} />
         </button>
 
-        <button className="rounded-xl border border-slate-700 p-2.5">
+        <button className="rounded-xl border border-slate-700 p-2.5 hover:bg-slate-800">
           <Share2 size={18} />
         </button>
 
-        <button className="rounded-xl border border-slate-700 p-2.5">
+        <button className="rounded-xl border border-slate-700 p-2.5 hover:bg-slate-800">
           <Download size={18} />
         </button>
-
       </div>
-
     </header>
   );
 }
