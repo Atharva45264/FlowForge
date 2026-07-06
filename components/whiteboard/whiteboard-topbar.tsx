@@ -1,0 +1,62 @@
+"use client";
+
+import {
+  Download,
+  Share2,
+  Sparkles,
+  Star,
+} from "lucide-react";
+
+export function WhiteboardTopbar() {
+  return (
+    <header
+      className="
+        flex
+        items-center
+        justify-between
+        border-b
+        border-slate-800
+        bg-[#111827]
+        px-6
+        py-4
+      "
+    >
+      <div>
+
+        <h1 className="text-2xl font-bold text-white">
+
+          Project Brainstorm
+
+        </h1>
+
+        <p className="text-sm text-slate-400">
+
+          Saved just now
+
+        </p>
+
+      </div>
+
+      <div className="flex gap-3">
+
+        <button className="rounded-xl border border-slate-700 p-2.5">
+          <Star size={18} />
+        </button>
+
+        <button className="rounded-xl border border-slate-700 p-2.5">
+          <Sparkles size={18} />
+        </button>
+
+        <button className="rounded-xl border border-slate-700 p-2.5">
+          <Share2 size={18} />
+        </button>
+
+        <button className="rounded-xl border border-slate-700 p-2.5">
+          <Download size={18} />
+        </button>
+
+      </div>
+
+    </header>
+  );
+}
