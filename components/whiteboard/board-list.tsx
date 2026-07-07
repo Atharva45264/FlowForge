@@ -1,6 +1,8 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo } from "react";
+
 import { BoardCard } from "./board-card";
 import { useWhiteboard } from "@/hooks/use-whiteboard";
 
@@ -25,11 +27,31 @@ export function BoardList() {
     );
   }, [boards, search]);
 
+  const favoriteBoards = useMemo(
+    () =>
+      filteredBoards.filter(
+        (board) => board.favorite
+      ),
+    [filteredBoards]
+  );
+
+  const recentBoards = useMemo(
+    () =>
+      filteredBoards.filter(
+        (board) => !board.favorite
+      ),
+    [filteredBoards]
+  );
+
   useEffect(() => {
-  if (!selectedBoard && boards.length > 0) {
-    setSelectedBoard(boards[0]);
-  }
-}, [boards, selectedBoard, setSelectedBoard]);
+    if (!selectedBoard && boards.length > 0) {
+      setSelectedBoard(boards[0]);
+    }
+  }, [
+    boards,
+    selectedBoard,
+    setSelectedBoard,
+  ]);
 
   if (loading) {
     return (
@@ -82,21 +104,74 @@ export function BoardList() {
   }
 
   return (
-    <div className="space-y-3">
-      {filteredBoards.map((board) => (
-        <BoardCard
-          key={board._id}
-          board={board}
-          active={selectedBoard?._id === board._id}
-          onClick={() => {
-            setSelectedBoard(board);
+    <div className="relative space-y-4">
+      {/* Favorites */}
+      {favoriteBoards.length > 0 && (
+        <>
+          <div className="flex items-center gap-2">
+            <div className="h-px flex-1 bg-yellow-500/30" />
 
-            //router.push(
-             // `/whiteboard/${board._id}`
-           // );
-          }}
-        />
-      ))}
+            <span className="text-xs font-semibold uppercase tracking-widest text-yellow-400">
+              ⭐ Favorites
+            </span>
+
+            <div className="h-px flex-1 bg-yellow-500/30" />
+          </div>
+
+          <div className="space-y-3">
+            {favoriteBoards.map((board) => (
+              <BoardCard
+                key={board._id}
+                board={board}
+                active={
+                  selectedBoard?._id === board._id
+                }
+                onClick={() => {
+                  setSelectedBoard(board);
+
+                  router.push(
+                    `/whiteboard/${board._id}`
+                  );
+                }}
+              />
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Recent */}
+      {recentBoards.length > 0 && (
+        <>
+          <div className="mt-5 flex items-center gap-2">
+            <div className="h-px flex-1 bg-slate-700" />
+
+            <span className="text-xs font-semibold uppercase tracking-widest text-slate-500">
+              Recent
+            </span>
+
+            <div className="h-px flex-1 bg-slate-700" />
+          </div>
+
+          <div className="space-y-3">
+            {recentBoards.map((board) => (
+              <BoardCard
+                key={board._id}
+                board={board}
+                active={
+                  selectedBoard?._id === board._id
+                }
+                onClick={() => {
+                  setSelectedBoard(board);
+
+                  router.push(
+                    `/whiteboard/${board._id}`
+                  );
+                }}
+              />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

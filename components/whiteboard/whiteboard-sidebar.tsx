@@ -87,6 +87,7 @@ export function WhiteboardSidebar() {
       <div
         className="
           flex-1
+          relative
           overflow-y-auto
           px-5
           pb-5

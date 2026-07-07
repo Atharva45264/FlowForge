@@ -49,4 +49,15 @@ export const WhiteboardAPI = {
     request(`${API}/${id}`, {
       method: "DELETE",
     }),
+
+  toggleFavorite: (
+  id: string,
+  favorite: boolean
+) =>
+  request<Whiteboard>(`${API}/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      favorite,
+    }),
+  }),
 };

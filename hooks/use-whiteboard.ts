@@ -42,26 +42,64 @@ export function useWhiteboard() {
         title,
       }),
 
-    onSuccess: () => {
-      toast.success("Renamed");
+    onSuccess: (board) => {
+  store.setSelectedBoard(board);
 
-      queryClient.invalidateQueries({
-        queryKey: ["whiteboards"],
-      });
-    },
+  toast.success("Whiteboard renamed");
+
+  queryClient.invalidateQueries({
+    queryKey: ["whiteboards"],
   });
+},
+  });
+
+const favoriteMutation = useMutation({
+  mutationFn: ({
+    id,
+    favorite,
+  }: {
+    id: string;
+    favorite: boolean;
+  }) =>
+    WhiteboardAPI.toggleFavorite(
+      id,
+      favorite
+    ),
+
+  onSuccess: (board) => {
+    if (
+      store.selectedBoard?._id === board._id
+    ) {
+      store.setSelectedBoard(board);
+    }
+
+    queryClient.invalidateQueries({
+      queryKey: ["whiteboards"],
+    });
+
+    toast.success(
+      board.favorite
+        ? "Added to favorites"
+        : "Removed from favorites"
+    );
+  },
+});
 
   const deleteMutation = useMutation({
-    mutationFn: WhiteboardAPI.deleteBoard,
+  mutationFn: WhiteboardAPI.deleteBoard,
 
-    onSuccess: () => {
-      toast.success("Deleted");
+  onSuccess: () => {
+    queryClient.invalidateQueries({
+      queryKey: ["whiteboards"],
+    });
 
-      queryClient.invalidateQueries({
-        queryKey: ["whiteboards"],
-      });
-    },
-  });
+    store.setSelectedBoard(null);
+
+    toast.success(
+      "Whiteboard deleted"
+    );
+  },
+});
 
   return {
   boards: boardsQuery.data ?? [],
@@ -87,5 +125,7 @@ export function useWhiteboard() {
   saving: store.saving,
 
   setSaving: store.setSaving,
+
+  toggleFavorite:favoriteMutation.mutateAsync,
 };
 }

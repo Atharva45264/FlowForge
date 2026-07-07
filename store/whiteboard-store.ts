@@ -4,11 +4,11 @@ import { create } from "zustand";
 import { Whiteboard } from "@/types/whiteboard";
 
 interface WhiteboardStore {
-  selectedBoard?: Whiteboard;
+  selectedBoard: Whiteboard | null;
 
   setSelectedBoard: (
-    board?: Whiteboard
-  ) => void;
+    board: Whiteboard | null
+) => void;
 
   search: string;
 
@@ -25,7 +25,7 @@ interface WhiteboardStore {
 
 export const useWhiteboardStore =
   create<WhiteboardStore>((set) => ({
-    selectedBoard: undefined,
+    selectedBoard: null,
 
     search: "",
 
