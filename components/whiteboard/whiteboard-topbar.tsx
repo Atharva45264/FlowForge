@@ -49,10 +49,6 @@ const saving = useWhiteboardStore(
         </button>
 
         <button className="rounded-xl border border-slate-700 p-2.5 hover:bg-slate-800">
-          <Sparkles size={18} />
-        </button>
-
-        <button className="rounded-xl border border-slate-700 p-2.5 hover:bg-slate-800">
           <Share2 size={18} />
         </button>
 

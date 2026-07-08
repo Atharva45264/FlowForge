@@ -101,6 +101,18 @@ const favoriteMutation = useMutation({
   },
 });
 
+const duplicateMutation = useMutation({
+  mutationFn: WhiteboardAPI.duplicateBoard,
+
+  onSuccess: () => {
+    toast.success("Whiteboard duplicated");
+
+    queryClient.invalidateQueries({
+      queryKey: ["whiteboards"],
+    });
+  },
+});
+
 const archiveMutation = useMutation({
   mutationFn: ({
     id,
@@ -157,5 +169,7 @@ const archiveMutation = useMutation({
   toggleFavorite:favoriteMutation.mutateAsync,
 
   archiveBoard:archiveMutation.mutateAsync,
+
+  duplicateBoard:duplicateMutation.mutateAsync,
 };
 }

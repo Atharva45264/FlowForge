@@ -94,3 +94,50 @@ export async function DELETE(
     success: true,
   });
 }
+
+export async function POST(
+  req: NextRequest,
+  { params }: Params
+) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401 }
+    );
+  }
+
+  await connectDB();
+
+  const { id } = await params;
+
+  const board = await Whiteboard.findOne({
+    _id: id,
+    ownerId: userId,
+  });
+
+  if (!board) {
+    return NextResponse.json(
+      { error: "Board not found" },
+      { status: 404 }
+    );
+  }
+
+  const duplicate =
+    await Whiteboard.create({
+      title: `${board.title} Copy`,
+      ownerId: userId,
+
+      favorite: board.favorite,
+
+      excalidrawData:
+        board.excalidrawData,
+
+      archived: false,
+    });
+
+  return NextResponse.json(
+    duplicate
+  );
+}

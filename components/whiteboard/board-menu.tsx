@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import {
   Archive,
+  Copy,
   Edit3,
   MoreHorizontal,
   Star,
@@ -29,6 +30,7 @@ export function BoardMenu({
     deleteBoard,
     toggleFavorite,
     archiveBoard,
+    duplicateBoard,
   } = useWhiteboard();
 
   useEffect(() => {
@@ -101,71 +103,81 @@ export function BoardMenu({
       </button>
 
       {open && (
-        <div
-  className="
-    absolute
-    right-0
-    top-10
-    z-9999
-    w-52
-    rounded-xl
-    border
-    border-slate-700
-    bg-[#111827]
-    p-2
-    shadow-2xl
-  "
->
-          <MenuItem
-            icon={<Edit3 size={16} />}
-            label="Rename"
-            onClick={handleRename}
-          />
+  <div
+    className="
+      absolute
+      right-0
+      top-10
+      z-9999
+      w-56
+      rounded-xl
+      border
+      border-slate-700
+      bg-[#111827]
+      p-2
+      shadow-2xl
+      shadow-black/40
+    "
+  >
+    <MenuItem
+      icon={<Edit3 size={16} />}
+      label="Rename"
+      onClick={handleRename}
+    />
 
-          <MenuItem
-  icon={<Star size={16} />}
-  label={
-    board.favorite
-      ? "Remove Favorite"
-      : "Add to Favorites"
-  }
-  onClick={async () => {
-    await toggleFavorite({
-      id: board._id,
-      favorite: !board.favorite,
-    });
+    <MenuItem
+      icon={<Copy size={16} />}
+      label="Duplicate"
+      onClick={async () => {
+        await duplicateBoard(board._id);
+        setOpen(false);
+      }}
+    />
 
-    setOpen(false);
-  }}
-/>
+    <MenuItem
+      icon={<Star size={16} />}
+      label={
+        board.favorite
+          ? "Remove Favorite"
+          : "Add to Favorites"
+      }
+      onClick={async () => {
+        await toggleFavorite({
+          id: board._id,
+          favorite: !board.favorite,
+        });
 
-          <MenuItem
-  icon={<Archive size={16} />}
-  label={
-    board.archived
-      ? "Restore"
-      : "Archive"
-  }
-  onClick={async () => {
-    await archiveBoard({
-      id: board._id,
-      archived: !board.archived,
-    });
+        setOpen(false);
+      }}
+    />
 
-    setOpen(false);
-  }}
-/>
+    <MenuItem
+      icon={<Archive size={16} />}
+      label={
+        board.archived
+          ? "Restore"
+          : "Archive"
+      }
+      onClick={async () => {
+        await archiveBoard({
+          id: board._id,
+          archived: !board.archived,
+        });
 
-          <div className="my-2 border-t border-slate-700" />
+        setOpen(false);
+      }}
+    />
 
-          <MenuItem
-            danger
-            icon={<Trash2 size={16} />}
-            label="Delete"
-            onClick={handleDelete}
-          />
-        </div>
-      )}
+    <div className="my-2 border-t border-slate-700" />
+
+    <MenuItem
+      danger
+      icon={<Trash2 size={16} />}
+      label="Delete"
+      onClick={handleDelete}
+    />
+  </div>
+)}
     </div>
   );
 }
@@ -188,14 +200,14 @@ function MenuItem({
       onClick={onClick}
       className={`
         flex
+        h-10
         w-full
         items-center
         gap-3
         rounded-lg
         px-3
-        py-2
         text-sm
-        transition
+        transition-colors
 
         ${
           danger
@@ -204,9 +216,11 @@ function MenuItem({
         }
       `}
     >
-      {icon}
+      <span className="w-4 shrink-0">
+        {icon}
+      </span>
 
-      {label}
+      <span>{label}</span>
     </button>
   );
 }

@@ -1,18 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { groq } from "@/lib/ai/groq";
-import { SYSTEM_PROMPT } from "@/lib/ai/prompt";
-import { parseDiagram } from "@/lib/ai/diagram-parser";
-import { generateExcalidrawElements } from "@/lib/ai/excalidraw-generator";
+import { ai } from "@/lib/ai/gemini";
 
-export async function POST(req: NextRequest) {
+import { SYSTEM_PROMPT } from "@/lib/ai/prompt";
+
+import { parseDiagram } from "@/lib/ai/diagram-parser";
+
+export async function POST(
+  req: NextRequest
+) {
   try {
     const { prompt } = await req.json();
 
-    if (!prompt) {
+    if (!prompt?.trim()) {
       return NextResponse.json(
         {
-          error: "Prompt required",
+          error: "Prompt is required",
         },
         {
           status: 400,
@@ -20,38 +23,40 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const completion =
-      await groq.chat.completions.create({
-        model: "llama-3.3-70b-versatile",
+    const response =
+      await ai.models.generateContent({
+        model: "gemini-2.5-flash",
 
-        temperature: 0.2,
+        contents: `
+${SYSTEM_PROMPT}
 
-        messages: [
-          {
-            role: "system",
-            content: SYSTEM_PROMPT,
-          },
-          {
-            role: "user",
-            content: prompt,
-          },
-        ],
+User Request:
+
+${prompt}
+`,
       });
 
     const text =
-      completion.choices[0]?.message?.content ?? "";
+      response.text ?? "";
+
+    console.log(
+      "========== GEMINI =========="
+    );
+
+    console.log(text);
+
+    console.log(
+      "============================"
+    );
 
     const diagram =
       parseDiagram(text);
 
-    const elements =
-      generateExcalidrawElements(
-        diagram
-      );
+
 
     return NextResponse.json({
       diagram,
-      elements,
+
     });
   } catch (error) {
     console.error(error);

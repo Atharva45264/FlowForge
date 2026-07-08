@@ -1,53 +1,126 @@
 "use client";
 
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import {
   Download,
   FileImage,
   FileJson,
+  FileType2,
 } from "lucide-react";
+import { toast } from "sonner";
+
+import { useExcalidrawStore } from "@/store/excalidraw-store";
 
 export function ExportMenu() {
+  const api = useExcalidrawStore(
+    (state) => state.api
+  );
+
   async function exportPNG() {
-    const api = (window as any).excalidrawAPI;
+    if (!api) {
+      toast.error("Canvas not ready");
+      return;
+    }
 
-    if (!api) return;
+    try {
+      const { exportToBlob } = await import(
+        "@excalidraw/excalidraw"
+      );
 
-    const blob = await api.exportToBlob({
-      mimeType: "image/png",
-    });
+      const blob = await exportToBlob({
+        elements: api.getSceneElements(),
+        appState: {
+          ...api.getAppState(),
+          exportBackground: true,
+        },
+        files: api.getFiles(),
+        mimeType: "image/png",
+      });
 
-    download(blob, "whiteboard.png");
+      download(blob, "whiteboard.png");
+
+      toast.success("PNG exported");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to export PNG");
+    }
   }
 
   async function exportSVG() {
-    const api = (window as any).excalidrawAPI;
+    if (!api) {
+      toast.error("Canvas not ready");
+      return;
+    }
 
-    if (!api) return;
+    try {
+      const { exportToSvg } = await import(
+        "@excalidraw/excalidraw"
+      );
 
-    const blob = await api.exportToBlob({
-      mimeType: "image/svg+xml",
-    });
+      const svg = await exportToSvg({
+        elements: api.getSceneElements(),
+        appState: {
+          ...api.getAppState(),
+          exportBackground: true,
+        },
+        files: api.getFiles(),
+      });
 
-    download(blob, "whiteboard.svg");
+      const blob = new Blob(
+        [svg.outerHTML],
+        {
+          type: "image/svg+xml",
+        }
+      );
+
+      download(blob, "whiteboard.svg");
+
+      toast.success("SVG exported");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to export SVG");
+    }
   }
 
   function exportJSON() {
-    const api = (window as any).excalidrawAPI;
+    if (!api) {
+      toast.error("Canvas not ready");
+      return;
+    }
 
-    if (!api) return;
+    try {
+      const scene = {
+        type: "excalidraw",
+        version: 2,
+        source: "FlowForge",
+        elements: api.getSceneElements(),
+        appState: api.getAppState(),
+        files: api.getFiles(),
+      };
 
-    const data = api.getSceneElements();
+      const blob = new Blob(
+        [
+          JSON.stringify(
+            scene,
+            null,
+            2
+          ),
+        ],
+        {
+          type: "application/json",
+        }
+      );
 
-    const blob = new Blob(
-      [
-        JSON.stringify(data, null, 2),
-      ],
-      {
-        type: "application/json",
-      }
-    );
+      download(
+        blob,
+        "whiteboard.excalidraw"
+      );
 
-    download(blob, "whiteboard.excalidraw");
+      toast.success("JSON exported");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to export JSON");
+    }
   }
 
   function download(
@@ -57,40 +130,116 @@ export function ExportMenu() {
     const url =
       URL.createObjectURL(blob);
 
-    const a =
+    const link =
       document.createElement("a");
 
-    a.href = url;
+    link.href = url;
+    link.download = filename;
 
-    a.download = filename;
+    document.body.appendChild(link);
 
-    a.click();
+    link.click();
+
+    document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
   }
 
   return (
-    <div className="flex gap-2">
-      <button
-        onClick={exportPNG}
-        className="rounded-xl border border-slate-700 p-2.5 hover:bg-slate-800"
-      >
-        <FileImage size={18} />
-      </button>
+    <DropdownMenu.Root>
+      <DropdownMenu.Trigger asChild>
+        <button
+          className="
+            flex
+            items-center
+            gap-2
+            rounded-xl
+            border
+            border-slate-700
+            bg-slate-900
+            px-4
+            py-2
+            text-sm
+            transition
+            hover:bg-slate-800
+          "
+        >
+          <Download size={16} />
+          Export
+        </button>
+      </DropdownMenu.Trigger>
 
-      <button
-        onClick={exportSVG}
-        className="rounded-xl border border-slate-700 p-2.5 hover:bg-slate-800"
-      >
-        <Download size={18} />
-      </button>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          sideOffset={8}
+          className="
+            z-50
+            w-52
+            rounded-xl
+            border
+            border-slate-700
+            bg-slate-900
+            p-2
+            shadow-xl
+          "
+        >
+          <DropdownMenu.Item
+            onClick={exportPNG}
+            className="
+              flex
+              cursor-pointer
+              items-center
+              gap-3
+              rounded-lg
+              px-3
+              py-2
+              outline-none
+              hover:bg-slate-800
+            "
+          >
+            <FileImage size={16} />
+            Export PNG
+          </DropdownMenu.Item>
 
-      <button
-        onClick={exportJSON}
-        className="rounded-xl border border-slate-700 p-2.5 hover:bg-slate-800"
-      >
-        <FileJson size={18} />
-      </button>
-    </div>
+          <DropdownMenu.Item
+            onClick={exportSVG}
+            className="
+              flex
+              cursor-pointer
+              items-center
+              gap-3
+              rounded-lg
+              px-3
+              py-2
+              outline-none
+              hover:bg-slate-800
+            "
+          >
+            <FileType2 size={16} />
+            Export SVG
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Separator className="my-2 h-px bg-slate-700" />
+
+          <DropdownMenu.Item
+            onClick={exportJSON}
+            className="
+              flex
+              cursor-pointer
+              items-center
+              gap-3
+              rounded-lg
+              px-3
+              py-2
+              outline-none
+              hover:bg-slate-800
+            "
+          >
+            <FileJson size={16} />
+            Export JSON
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 }

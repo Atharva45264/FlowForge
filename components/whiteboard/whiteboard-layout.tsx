@@ -4,6 +4,7 @@ import { WhiteboardSidebar } from "./whiteboard-sidebar";
 import { WhiteboardTopbar } from "./whiteboard-topbar";
 import { WhiteboardCanvas } from "./whiteboard-canvas";
 
+
 interface Props {
   boardId?: string;
 }
@@ -18,7 +19,12 @@ export function WhiteboardLayout({
       <div className="flex flex-1 flex-col">
         <WhiteboardTopbar />
 
-        <WhiteboardCanvas boardId={boardId} />
+        <div className="flex flex-1 overflow-hidden">
+  <div className="flex min-h-0 flex-1">
+    <WhiteboardCanvas boardId={boardId} />
+  </div>
+
+</div>
       </div>
     </div>
   );

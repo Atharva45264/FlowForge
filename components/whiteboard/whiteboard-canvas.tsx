@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+import { useExcalidrawStore } from "@/store/excalidraw-store";
 import { useWhiteboard } from "@/hooks/use-whiteboard";
 const Excalidraw = dynamic(
   async () =>
@@ -31,7 +32,9 @@ export function WhiteboardCanvas({
 
   const [initialData, setInitialData] =
     useState<any>(null);
-
+const setAPI = useExcalidrawStore(
+  (state) => state.setAPI
+);
   const saveTimeout =
   useRef<ReturnType<typeof setTimeout> | null>(null);
   const excalidrawRef =
@@ -43,6 +46,7 @@ export function WhiteboardCanvas({
       const res = await fetch(
         `/api/whiteboards/${boardId}`
       );
+
 
       const board = await res.json();
 
@@ -116,16 +120,20 @@ export function WhiteboardCanvas({
   }
 
   return (
-    <div className="flex-1 bg-[#1E293B]">
-      <Excalidraw
+  <div className="h-full w-full bg-[#1E293B]">
+<Excalidraw
   excalidrawAPI={(api) => {
-  if (!excalidrawRef.current) {
-    excalidrawRef.current = api;
-  }
-}}
-        initialData={initialData}
-        onChange={handleChange}
-      />
-    </div>
-  );
+    if (!api) return;
+
+    setAPI(api);
+
+    (window as any).excalidrawAPI = api;
+
+    console.log("✅ Excalidraw API Ready");
+  }}
+  initialData={initialData}
+  onChange={handleChange}
+/>
+  </div>
+);
 }

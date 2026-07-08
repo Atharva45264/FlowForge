@@ -70,4 +70,8 @@ export const WhiteboardAPI = {
       archived,
     }),
   }),
+  duplicateBoard: (id: string) =>
+  request<Whiteboard>(`${API}/${id}`, {
+    method: "POST",
+  }),
 };
