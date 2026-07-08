@@ -101,6 +101,38 @@ const favoriteMutation = useMutation({
   },
 });
 
+const archiveMutation = useMutation({
+  mutationFn: ({
+    id,
+    archived,
+  }: {
+    id: string;
+    archived: boolean;
+  }) =>
+    WhiteboardAPI.archiveBoard(
+      id,
+      archived
+    ),
+
+  onSuccess: (board) => {
+    if (
+      store.selectedBoard?._id === board._id
+    ) {
+      store.setSelectedBoard(null);
+    }
+
+    queryClient.invalidateQueries({
+      queryKey: ["whiteboards"],
+    });
+
+    toast.success(
+      board.archived
+        ? "Whiteboard archived"
+        : "Whiteboard restored"
+    );
+  },
+});
+
   return {
   boards: boardsQuery.data ?? [],
 
@@ -122,10 +154,8 @@ const favoriteMutation = useMutation({
 
   setSearch: store.setSearch,
 
-  saving: store.saving,
-
-  setSaving: store.setSaving,
-
   toggleFavorite:favoriteMutation.mutateAsync,
+
+  archiveBoard:archiveMutation.mutateAsync,
 };
 }
