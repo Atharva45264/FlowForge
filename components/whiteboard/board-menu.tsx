@@ -12,6 +12,7 @@ import {
 import { useWhiteboard } from "@/hooks/use-whiteboard";
 import { Whiteboard } from "@/types/whiteboard";
 
+
 interface BoardMenuProps {
   board: Whiteboard;
 }
@@ -27,6 +28,7 @@ export function BoardMenu({
     renameBoard,
     deleteBoard,
     toggleFavorite,
+    archiveBoard,
   } = useWhiteboard();
 
   useEffect(() => {
@@ -138,10 +140,21 @@ export function BoardMenu({
 />
 
           <MenuItem
-            icon={<Archive size={16} />}
-            label="Archive"
-            onClick={() => {}}
-          />
+  icon={<Archive size={16} />}
+  label={
+    board.archived
+      ? "Restore"
+      : "Archive"
+  }
+  onClick={async () => {
+    await archiveBoard({
+      id: board._id,
+      archived: !board.archived,
+    });
+
+    setOpen(false);
+  }}
+/>
 
           <div className="my-2 border-t border-slate-700" />
 

@@ -60,4 +60,14 @@ export const WhiteboardAPI = {
       favorite,
     }),
   }),
+  archiveBoard: (
+  id: string,
+  archived: boolean
+) =>
+  request<Whiteboard>(`${API}/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      archived,
+    }),
+  }),
 };

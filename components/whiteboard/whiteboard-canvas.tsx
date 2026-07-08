@@ -1,5 +1,5 @@
 "use client";
-
+import { useWhiteboardStore } from "@/store/whiteboard-store";
 import dynamic from "next/dynamic";
 import {
   useCallback,
@@ -7,9 +7,8 @@ import {
   useRef,
   useState,
 } from "react";
-
+import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { useWhiteboard } from "@/hooks/use-whiteboard";
-
 const Excalidraw = dynamic(
   async () =>
     (await import("@excalidraw/excalidraw"))
@@ -26,16 +25,17 @@ interface Props {
 export function WhiteboardCanvas({
   boardId,
 }: Props) {
-  const {
-    setSaving,
-  } = useWhiteboard();
+  const setSaving = useWhiteboardStore(
+  (state) => state.setSaving
+);
 
   const [initialData, setInitialData] =
     useState<any>(null);
 
-  const timeoutRef =
-    useRef<NodeJS.Timeout | null>(null);
-
+  const saveTimeout =
+  useRef<ReturnType<typeof setTimeout> | null>(null);
+  const excalidrawRef =
+  useRef<ExcalidrawImperativeAPI | null>(null);
   useEffect(() => {
     if (!boardId) return;
 
@@ -71,13 +71,13 @@ export function WhiteboardCanvas({
       ) => {
         if (!boardId) return;
 
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current);
+        if (saveTimeout.current) {
+          clearTimeout(saveTimeout.current);
         }
 
-        setSaving(true);
+        useWhiteboardStore.getState().setSaving(true);
 
-        timeoutRef.current =
+        saveTimeout.current =
           setTimeout(async () => {
             await fetch(
               `/api/whiteboards/${boardId}`,
@@ -99,7 +99,7 @@ export function WhiteboardCanvas({
               }
             );
 
-            setSaving(false);
+            useWhiteboardStore.getState().setSaving(false);
           }, 2000);
       },
       [boardId, setSaving]
@@ -118,6 +118,11 @@ export function WhiteboardCanvas({
   return (
     <div className="flex-1 bg-[#1E293B]">
       <Excalidraw
+  excalidrawAPI={(api) => {
+  if (!excalidrawRef.current) {
+    excalidrawRef.current = api;
+  }
+}}
         initialData={initialData}
         onChange={handleChange}
       />
