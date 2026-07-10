@@ -7,6 +7,7 @@ import {
   Library,
   PenTool,
   Settings,
+  Sparkles,
   WandSparkles,
 } from "lucide-react"
 import * as React from "react"
@@ -63,8 +64,8 @@ export const menuGroups: MenuGroup[] = [
         color: "text-emerald-400",
       },
       {
-        label: "Whiteboard",
-        href: "/whiteboard",
+        label: "Canvas",
+        href: "/canvas",
         icon: PenTool,
         color: "text-pink-400",
       },
@@ -75,11 +76,11 @@ export const menuGroups: MenuGroup[] = [
         color: "text-cyan-300",
       },
       {
-        label: "AI Template Builder",
-        href: "/templates",
-        icon: WandSparkles,
-        color: "text-violet-300",
-      },
+  label: "FlowForge Architect",
+  href: "/architect",
+  icon: Sparkles,
+  color: "text-violet-400",
+}
     ],
   },
   {
