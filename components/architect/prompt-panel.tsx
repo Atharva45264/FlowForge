@@ -1,10 +1,54 @@
 "use client";
 
 import { Sparkles, Wand2, RotateCcw } from "lucide-react";
-import { useState } from "react";
+import { useArchitectStore } from "@/store/architect-store";
+import { MermaidEditor } from "./mermaid-editor";
 
 export function PromptPanel() {
-  const [prompt, setPrompt] = useState("");
+  const {
+    prompt,
+    setPrompt,
+    loading,
+    setLoading,
+    setMermaid,
+    clear,
+  } = useArchitectStore();
+
+  async function generateDiagram() {
+    if (!prompt.trim()) return;
+
+    setLoading(true);
+
+    try {
+      const res = await fetch(
+        "/api/architect/generate",
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json",
+          },
+
+          body: JSON.stringify({
+            prompt,
+          }),
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to generate diagram");
+      }
+
+      const data = await res.json();
+
+      setMermaid(data.mermaid);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to generate diagram.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <section className="flex w-[42%] flex-col border-r border-slate-800 bg-[#0F172A]">
@@ -18,21 +62,21 @@ export function PromptPanel() {
         </p>
       </div>
 
-      <div className="flex-1 p-6">
+      <div className="flex-1 overflow-y-auto p-6">
         <textarea
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
-          placeholder="Example:
+          placeholder={`Example:
 
 Create a Food Delivery Microservice Architecture
 
 or
 
-Generate an ER Diagram for an E-commerce System
+Generate an ER Diagram for an E-Commerce System
 
 or
 
-Design a JWT Authentication Flow"
+Design a JWT Authentication Flow`}
           className="
             h-72
             w-full
@@ -52,6 +96,8 @@ Design a JWT Authentication Flow"
 
         <div className="mt-5 flex gap-3">
           <button
+            onClick={generateDiagram}
+            disabled={loading}
             className="
               flex
               flex-1
@@ -64,14 +110,19 @@ Design a JWT Authentication Flow"
               font-medium
               transition
               hover:bg-violet-500
+              disabled:cursor-not-allowed
+              disabled:opacity-60
             "
           >
             <Sparkles size={18} />
 
-            Generate Diagram
+            {loading
+              ? "Generating..."
+              : "Generate Diagram"}
           </button>
 
           <button
+            onClick={clear}
             className="
               rounded-xl
               border
@@ -97,6 +148,7 @@ Design a JWT Authentication Flow"
         </div>
 
         <div className="mt-8">
+            <MermaidEditor />
           <h3 className="mb-3 text-sm font-semibold text-slate-300">
             Example Prompts
           </h3>
