@@ -3,11 +3,19 @@
 import { create } from "zustand";
 
 interface ArchitectStore {
+  currentProjectId: string | null;
+
   prompt: string;
+
   mermaid: string;
+
   loading: boolean;
 
   selectedTemplate: string;
+
+  setCurrentProject: (
+    id: string | null
+  ) => void;
 
   setPrompt: (
     prompt: string
@@ -30,6 +38,8 @@ interface ArchitectStore {
 
 export const useArchitectStore =
   create<ArchitectStore>((set) => ({
+    currentProjectId: null,
+
     prompt: "",
 
     mermaid: "",
@@ -37,6 +47,11 @@ export const useArchitectStore =
     loading: false,
 
     selectedTemplate: "Flowchart",
+
+    setCurrentProject: (id) =>
+      set({
+        currentProjectId: id,
+      }),
 
     setPrompt: (prompt) =>
       set({
@@ -62,6 +77,7 @@ export const useArchitectStore =
 
     clear: () =>
       set({
+        currentProjectId: null,
         prompt: "",
         mermaid: "",
         selectedTemplate:

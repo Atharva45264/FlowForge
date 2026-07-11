@@ -12,6 +12,7 @@ export function PromptPanel() {
     setLoading,
     setMermaid,
     clear,
+    selectedTemplate,
   } = useArchitectStore();
 
   async function generateDiagram() {
@@ -30,8 +31,10 @@ export function PromptPanel() {
           },
 
           body: JSON.stringify({
-            prompt,
-          }),
+  prompt,
+  template:
+    selectedTemplate,
+}),
         }
       );
 

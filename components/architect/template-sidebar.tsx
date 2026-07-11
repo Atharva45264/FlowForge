@@ -15,39 +15,41 @@ const templates = [
   {
     title: "Flowchart",
     icon: Workflow,
-    prompt: "Create a flowchart using Mermaid.",
+    prompt: "Create a software flowchart for ",
   },
   {
     title: "ER Diagram",
     icon: Database,
-    prompt: "Generate an ER Diagram for an E-Commerce System using Mermaid.",
+    prompt: "Create an ER diagram for ",
   },
   {
     title: "Microservices",
     icon: Boxes,
-    prompt: "Design a Food Delivery Microservice Architecture using Mermaid.",
+    prompt: "Design a microservices architecture for ",
   },
   {
     title: "AWS Cloud",
     icon: Cloud,
-    prompt: "Design an AWS Cloud Architecture using Mermaid.",
+    prompt: "Design an AWS cloud architecture for ",
   },
   {
     title: "Sequence",
     icon: GitBranch,
-    prompt: "Generate a User Login Sequence Diagram using Mermaid.",
+    prompt: "Create a sequence diagram for ",
   },
   {
     title: "System Design",
     icon: Network,
-    prompt: "Design a Netflix System Architecture using Mermaid.",
+    prompt: "Design a scalable system for ",
   },
 ];
 
 export function TemplateSidebar() {
-  const setPrompt = useArchitectStore(
-    (state) => state.setPrompt
-  );
+  const {
+    setPrompt,
+    setSelectedTemplate,
+    selectedTemplate,
+  } = useArchitectStore();
 
   return (
     <aside
@@ -79,23 +81,32 @@ export function TemplateSidebar() {
           return (
             <button
               key={template.title}
-              onClick={() =>
-                setPrompt(template.prompt)
-              }
-              className="
+              onClick={() => {
+                setSelectedTemplate(
+                  template.title
+                );
+
+                setPrompt(
+                  template.prompt
+                );
+              }}
+              className={`
                 flex
                 w-full
                 items-center
                 gap-4
                 rounded-xl
                 border
-                border-slate-700
-                bg-slate-900
                 p-4
                 transition-all
-                hover:border-violet-500
-                hover:bg-slate-800
-              "
+
+                ${
+                  selectedTemplate ===
+                  template.title
+                    ? "border-violet-500 bg-violet-500/10"
+                    : "border-slate-700 bg-slate-900 hover:border-violet-500 hover:bg-slate-800"
+                }
+              `}
             >
               <Icon
                 size={22}
