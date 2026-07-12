@@ -15,67 +15,55 @@ const templates = [
   {
     title: "Flowchart",
     icon: Workflow,
-    prompt: "Create a software flowchart for ",
+    prompt: "Create a software flowchart for",
   },
   {
-  title: "Database Design",
-  icon: Database,
-  prompt:
-    "Design a relational database for ",
-},
+    title: "Database Design",
+    icon: Database,
+    prompt: "Design a relational database for",
+  },
   {
     title: "Microservices",
     icon: Boxes,
-    prompt: "Design a microservices architecture for ",
+    prompt: "Design a microservices architecture for",
   },
   {
     title: "AWS Cloud",
     icon: Cloud,
-    prompt: "Design an AWS cloud architecture for ",
+    prompt: "Design an AWS cloud architecture for",
   },
   {
     title: "Sequence",
     icon: GitBranch,
-    prompt: "Create a sequence diagram for ",
+    prompt: "Create a sequence diagram for",
   },
   {
     title: "Application Architecture",
     icon: Network,
-    prompt: "Design an application architecture for ",
+    prompt: "Design an application architecture for",
   },
 ];
 
-export function TemplateSidebar() {
+export function TemplateSelector() {
   const {
-    setPrompt,
-    setSelectedTemplate,
     selectedTemplate,
+    setSelectedTemplate,
+    setPrompt,
   } = useArchitectStore();
 
   return (
-    <aside
-      className="
-        w-72
-        border-r
-        border-slate-800
-        bg-[#111827]
-        p-5
-      "
-    >
-      <h2
-        className="
-          mb-5
-          text-sm
-          font-semibold
-          uppercase
-          tracking-widest
-          text-slate-400
-        "
-      >
-        Templates
-      </h2>
+    <div className="mb-6">
+      <div className="mb-3">
+        <h3 className="text-sm font-semibold text-slate-300">
+          Templates
+        </h3>
 
-      <div className="space-y-3">
+        <p className="text-xs text-slate-500">
+          Choose a starting point for AI generation
+        </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3">
         {templates.map((template) => {
           const Icon = template.icon;
 
@@ -88,17 +76,14 @@ export function TemplateSidebar() {
                 );
 
                 setPrompt(
-                  template.prompt
+                  `${template.prompt} `
                 );
               }}
               className={`
-                flex
-                w-full
-                items-center
-                gap-4
                 rounded-xl
                 border
                 p-4
+                text-left
                 transition-all
 
                 ${
@@ -109,24 +94,26 @@ export function TemplateSidebar() {
                 }
               `}
             >
-              <Icon
-                size={22}
-                className="text-violet-400"
-              />
+              <div className="flex items-center gap-3">
+                <Icon
+                  size={22}
+                  className="text-violet-400"
+                />
 
-              <div className="text-left">
-                <p className="font-medium text-white">
-                  {template.title}
-                </p>
+                <div>
+                  <p className="font-medium">
+                    {template.title}
+                  </p>
 
-                <p className="mt-1 text-xs text-slate-400">
-                  Click to use template
-                </p>
+                  <p className="text-xs text-slate-500">
+                    Click to use template
+                  </p>
+                </div>
               </div>
             </button>
           );
         })}
       </div>
-    </aside>
+    </div>
   );
 }

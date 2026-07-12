@@ -5,6 +5,7 @@ import { TemplateSidebar } from "./template-sidebar";
 import { PromptPanel } from "./prompt-panel";
 import { PreviewPanel } from "./preview-panel";
 import { BottomToolbar } from "./bottom-toolbar";
+import { ProjectSidebar } from "./project-sidebar";
 
 export function ArchitectLayout() {
   return (
@@ -12,7 +13,7 @@ export function ArchitectLayout() {
       <ArchitectHeader />
 
       <div className="flex flex-1 overflow-hidden">
-        <TemplateSidebar />
+        <ProjectSidebar />
 
         <PromptPanel />
 

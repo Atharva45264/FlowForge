@@ -1,8 +1,14 @@
 "use client";
 
-import { Sparkles, Wand2, RotateCcw } from "lucide-react";
+import {
+  Sparkles,
+  Wand2,
+  RotateCcw,
+} from "lucide-react";
+
 import { useArchitectStore } from "@/store/architect-store";
 import { MermaidEditor } from "./mermaid-editor";
+import { TemplateSelector } from "./template-selector";
 
 export function PromptPanel() {
   const {
@@ -27,34 +33,59 @@ export function PromptPanel() {
           method: "POST",
 
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
 
           body: JSON.stringify({
-  prompt,
-  template:
-    selectedTemplate,
-}),
+            prompt,
+            template:
+              selectedTemplate,
+          }),
         }
       );
 
       if (!res.ok) {
-        throw new Error("Failed to generate diagram");
+        const err =
+          await res.json();
+
+        throw new Error(
+          err.error ??
+            "Generation failed"
+        );
       }
 
-      const data = await res.json();
+      const data =
+        await res.json();
 
-      setMermaid(data.mermaid);
-    } catch (err) {
+      setMermaid(
+        data.mermaid
+      );
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to generate diagram.");
+
+      alert(
+        err.message ??
+          "Failed to generate diagram."
+      );
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <section className="flex w-[42%] flex-col border-r border-slate-800 bg-[#0F172A]">
+    <section
+      className="
+        flex
+        w-[42%]
+        flex-col
+        border-r
+        border-slate-800
+        bg-[#0F172A]
+      "
+    >
+      {/* Header */}
+
       <div className="border-b border-slate-800 p-6">
         <h2 className="text-lg font-semibold text-white">
           Describe your architecture
@@ -65,21 +96,36 @@ export function PromptPanel() {
         </p>
       </div>
 
+      {/* Body */}
+
       <div className="flex-1 overflow-y-auto p-6">
+
+        {/* Templates */}
+
+        <TemplateSelector />
+
+        {/* Prompt */}
+
         <textarea
           value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder={`Example:
+          onChange={(e) =>
+            setPrompt(
+              e.target.value
+            )
+          }
+          placeholder={`Describe the architecture you want...
+
+Example:
+
+Design a Netflix Streaming Platform
+
+or
 
 Create a Food Delivery Microservice Architecture
 
 or
 
-Generate an ER Diagram for an E-Commerce System
-
-or
-
-Design a JWT Authentication Flow`}
+Generate JWT Authentication Flow`}
           className="
             h-72
             w-full
@@ -97,9 +143,13 @@ Design a JWT Authentication Flow`}
           "
         />
 
+        {/* Buttons */}
+
         <div className="mt-5 flex gap-3">
           <button
-            onClick={generateDiagram}
+            onClick={
+              generateDiagram
+            }
             disabled={loading}
             className="
               flex
@@ -150,41 +200,10 @@ Design a JWT Authentication Flow`}
           </button>
         </div>
 
-        <div className="mt-8">
-            <MermaidEditor />
-          <h3 className="mb-3 text-sm font-semibold text-slate-300">
-            Example Prompts
-          </h3>
+        {/* Mermaid Editor */}
 
-          <div className="space-y-2">
-            {[
-              "Design a Netflix System Architecture",
-              "Generate JWT Authentication Flow",
-              "Create Food Delivery Microservices",
-              "Build an E-Commerce ER Diagram",
-            ].map((item) => (
-              <button
-                key={item}
-                onClick={() => setPrompt(item)}
-                className="
-                  block
-                  w-full
-                  rounded-xl
-                  border
-                  border-slate-700
-                  bg-slate-900
-                  p-3
-                  text-left
-                  text-sm
-                  text-slate-300
-                  transition
-                  hover:border-violet-500
-                "
-              >
-                {item}
-              </button>
-            ))}
-          </div>
+        <div className="mt-8">
+          <MermaidEditor />
         </div>
       </div>
     </section>

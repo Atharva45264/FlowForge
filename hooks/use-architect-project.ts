@@ -84,8 +84,9 @@ export function useArchitectProject() {
     });
 
   return {
-    projects:
-      projectsQuery.data ?? [],
+  projects:
+    (projectsQuery.data ??
+      []) as ArchitectProject[],
 
     loading:
       projectsQuery.isLoading,
