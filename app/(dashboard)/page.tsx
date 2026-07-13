@@ -4,7 +4,7 @@ import { HeroSection } from "@/components/dashboard/hero-section"
 import { WorkspaceCards } from "@/components/dashboard/workspace-cards"
 import { KanbanPreview } from "@/components/dashboard/kanban-preview"
 import { TodayPanel } from "@/components/dashboard/today-panel"
-import { AIAssistantPanel } from "@/components/dashboard/ai-assistant-panel"
+import AILayout from "@/components/ai/ai-layout"
 
 export default function DashboardPage() {
   return (
@@ -17,7 +17,7 @@ export default function DashboardPage() {
 
       <aside className="space-y-6">
         <TodayPanel />
-        <AIAssistantPanel />
+        <AILayout />
       </aside>
     </div>
   )

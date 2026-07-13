@@ -1,3 +1,5 @@
-export default function Page() {
-  return <div>Coming Soon</div>
+import AILayout from "@/components/ai/ai-layout";
+
+export default function AIPage() {
+  return <AILayout />;
 }
