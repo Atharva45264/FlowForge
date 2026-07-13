@@ -15,14 +15,22 @@ export function ProjectSidebar() {
   const [search, setSearch] =
     useState("");
 
-  const filtered = projects.filter(
-  (project: ArchitectProject) =>
+  const filtered = projects
+  .filter((project: ArchitectProject) =>
     project.title
       .toLowerCase()
-      .includes(
-        search.toLowerCase()
-      )
-);
+      .includes(search.toLowerCase())
+  )
+  .sort((a, b) => {
+    if (a.favorite !== b.favorite) {
+      return a.favorite ? -1 : 1;
+    }
+
+    return (
+      new Date(b.updatedAt).getTime() -
+      new Date(a.updatedAt).getTime()
+    );
+  });
 
   return (
     <aside

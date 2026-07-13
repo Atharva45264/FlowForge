@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useState, useRef, useEffect } from "react";
+
 import {
   Edit3,
   MoreHorizontal,
@@ -8,8 +9,8 @@ import {
   Trash2,
 } from "lucide-react";
 
-import { useArchitectProject } from "@/hooks/use-architect-project";
 import { ArchitectProject } from "@/types/architect";
+import { useArchitectProject } from "@/hooks/use-architect-project";
 
 interface Props {
   project: ArchitectProject;
@@ -27,8 +28,7 @@ export function ProjectMenu({
   const {
     updateProject,
     deleteProject,
-  } =
-    useArchitectProject();
+  } = useArchitectProject();
 
   useEffect(() => {
     function handleClick(
@@ -105,62 +105,57 @@ export function ProjectMenu({
     <div
       ref={menuRef}
       className="relative"
+      onClick={(e) =>
+        e.stopPropagation()
+      }
     >
       <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setOpen(!open);
-        }}
+        onClick={() =>
+          setOpen(!open)
+        }
         className="rounded-lg p-1.5 hover:bg-slate-800"
       >
-        <MoreHorizontal
-          size={16}
-        />
+        <MoreHorizontal size={16} />
       </button>
 
       {open && (
         <div
           className="
-            absolute
-            right-0
-            top-10
-            z-50
-            w-52
-            rounded-xl
-            border
-            border-slate-700
-            bg-[#111827]
-            p-2
-            shadow-2xl
-          "
+          absolute
+          right-0
+          top-10
+          z-50
+          w-48
+          rounded-xl
+          border
+          border-slate-700
+          bg-slate-900
+          p-2
+        "
         >
           <MenuItem
-            icon={
-              <Edit3 size={16} />
-            }
+            icon={<Edit3 size={16} />}
             label="Rename"
             onClick={rename}
           />
 
           <MenuItem
-            icon={
-              <Star size={16} />
-            }
+            icon={<Star size={16} />}
             label={
               project.favorite
                 ? "Remove Favorite"
-                : "Add Favorite"
+                : "Favorite"
             }
-            onClick={favorite}
+            onClick={
+              favorite
+            }
           />
 
           <div className="my-2 border-t border-slate-700" />
 
           <MenuItem
             danger
-            icon={
-              <Trash2 size={16} />
-            }
+            icon={<Trash2 size={16} />}
             label="Delete"
             onClick={remove}
           />
@@ -188,14 +183,13 @@ function MenuItem({
       onClick={onClick}
       className={`
         flex
-        h-10
         w-full
         items-center
         gap-3
         rounded-lg
         px-3
+        py-2
         text-sm
-        transition-colors
 
         ${
           danger
