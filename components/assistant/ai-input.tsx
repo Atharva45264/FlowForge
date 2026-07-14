@@ -1,29 +1,46 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import {
+  FileText,
   ImageIcon,
   Loader2,
   Mic,
   Paperclip,
   SendHorizontal,
   Square,
+  X,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+
 import useVoice from "@/hooks/use-voice";
+import usePDFTool from "@/hooks/use-pdf-tool";
+
+import type { UploadedFile } from "./ai-layout";
 
 interface AIInputProps {
   onSend: (message: string) => Promise<void>;
   loading: boolean;
+
+  uploadedFile: UploadedFile | null;
+
+  setUploadedFile: React.Dispatch<
+    React.SetStateAction<UploadedFile | null>
+  >;
 }
 
 export default function AIInput({
   onSend,
   loading,
+  uploadedFile,
+  setUploadedFile,
 }: AIInputProps) {
   const [message, setMessage] = useState("");
+
+  const fileInputRef =
+    useRef<HTMLInputElement>(null);
 
   const {
     transcript,
@@ -32,6 +49,11 @@ export default function AIInput({
     stopListening,
     clearTranscript,
   } = useVoice();
+
+  const {
+    uploading,
+    upload,
+  } = usePDFTool();
 
   useEffect(() => {
     if (transcript) {
@@ -45,50 +67,102 @@ export default function AIInput({
     const text = message;
 
     setMessage("");
+
     clearTranscript();
 
     await onSend(text);
   }
 
-  function handleKeyDown(
-    e: React.KeyboardEvent<HTMLTextAreaElement>
+  async function handlePDFChange(
+    e: React.ChangeEvent<HTMLInputElement>
   ) {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    try {
+      const uploaded = await upload(file);
+
+      setUploadedFile(uploaded);
+    } catch (err) {
+      console.error(err);
+      alert("Failed uploading PDF.");
     }
+
+    e.target.value = "";
   }
 
   return (
     <div className="border-t bg-background p-4">
+
+      {uploadedFile && (
+        <div className="mb-3 flex items-center justify-between rounded-lg border bg-muted px-3 py-2">
+
+          <div className="flex items-center gap-2">
+
+            <FileText className="h-4 w-4 text-red-500" />
+
+            <span className="text-sm">
+              {uploadedFile.fileName}
+            </span>
+
+          </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() =>
+              setUploadedFile(null)
+            }
+          >
+            <X className="h-4 w-4" />
+          </Button>
+
+        </div>
+      )}
+
       <div className="flex items-end gap-3 rounded-2xl border bg-card p-3">
 
-        {/* PDF */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".pdf"
+          className="hidden"
+          onChange={handlePDFChange}
+        />
 
         <Button
           variant="ghost"
           size="icon"
-          disabled={loading}
+          disabled={
+            loading || uploading
+          }
+          onClick={() =>
+            fileInputRef.current?.click()
+          }
         >
-          <Paperclip className="h-5 w-5" />
+          {uploading ? (
+            <Loader2 className="h-5 w-5 animate-spin" />
+          ) : (
+            <Paperclip className="h-5 w-5" />
+          )}
         </Button>
 
-        {/* Image */}
-
         <Button
           variant="ghost"
           size="icon"
-          disabled={loading}
+          disabled
         >
           <ImageIcon className="h-5 w-5" />
         </Button>
 
-        {/* Voice */}
-
         <Button
-          variant={listening ? "destructive" : "ghost"}
+          variant={
+            listening
+              ? "destructive"
+              : "ghost"
+          }
           size="icon"
-          disabled={loading}
           onClick={() => {
             if (listening) {
               stopListening();
@@ -105,8 +179,6 @@ export default function AIInput({
           )}
         </Button>
 
-        {/* Text Area */}
-
         <textarea
           rows={1}
           value={message}
@@ -114,23 +186,32 @@ export default function AIInput({
           onChange={(e) =>
             setMessage(e.target.value)
           }
-          onKeyDown={handleKeyDown}
+          onKeyDown={(e) => {
+            if (
+              e.key === "Enter" &&
+              !e.shiftKey
+            ) {
+              e.preventDefault();
+              handleSend();
+            }
+          }}
           placeholder={
             listening
               ? "Listening..."
-              : "Ask FlowForge AI anything..."
+              : uploadedFile
+              ? "Ask anything about your document..."
+              : "Ask FlowForge AI..."
           }
-          className="max-h-40 min-h-11 flex-1 resize-none bg-transparent px-2 py-2 outline-none"
+          className="max-h-40 min-h-11 flex-1 resize-none bg-transparent outline-none"
         />
 
-        {/* Send */}
-
         <Button
-          onClick={handleSend}
-          disabled={
-            loading || !message.trim()
-          }
           size="icon"
+          disabled={
+            loading ||
+            !message.trim()
+          }
+          onClick={handleSend}
         >
           {loading ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -141,11 +222,6 @@ export default function AIInput({
 
       </div>
 
-      <p className="mt-2 text-center text-xs text-muted-foreground">
-        {listening
-          ? "🎤 Listening..."
-          : "Press Enter to send • Shift + Enter for new line"}
-      </p>
     </div>
   );
 }

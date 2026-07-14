@@ -5,11 +5,29 @@ import { useState } from "react";
 import AIChat from "./ai-chat";
 import AISidebar from "./ai-sidebar";
 
+export interface UploadedFile {
+  type: "pdf" | "image";
+
+  fileName: string;
+
+  mimeType: string;
+
+  base64: string;
+
+  /** optional for future image uploads */
+  width?: number;
+
+  height?: number;
+}
+
 export default function AILayout() {
   const [
     selectedConversation,
     setSelectedConversation,
   ] = useState<string | null>(null);
+
+  const [uploadedFile, setUploadedFile] =
+    useState<UploadedFile | null>(null);
 
   return (
     <div className="flex h-[calc(100vh-64px)] overflow-hidden">
@@ -32,6 +50,8 @@ export default function AILayout() {
           onSelectConversation={
             setSelectedConversation
           }
+          uploadedFile={uploadedFile}
+          setUploadedFile={setUploadedFile}
         />
       </div>
     </div>

@@ -3,12 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 
 import type { AIMessage } from "@/types/ai";
-
-interface ChatResponse {
-  _id: string;
-  title: string;
-  messages: AIMessage[];
-}
+import type { UploadedFile } from "@/components/assistant/ai-layout";
 
 interface UseChatProps {
   chatId: string | null;
@@ -22,13 +17,19 @@ export default function useChat({
   const [currentChatId, setCurrentChatId] =
     useState<string | null>(chatId);
 
-  const [messages, setMessages] = useState<AIMessage[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [messages, setMessages] = useState<
+    AIMessage[]
+  >([]);
+
+  const [loading, setLoading] =
+    useState(false);
+
   const [loadingChat, setLoadingChat] =
     useState(false);
-  const [error, setError] = useState<string | null>(
-    null
-  );
+
+  const [error, setError] = useState<
+    string | null
+  >(null);
 
   useEffect(() => {
     setCurrentChatId(chatId);
@@ -82,19 +83,17 @@ export default function useChat({
   }, [currentChatId]);
 
   const sendMessage = useCallback(
-    async (content: string) => {
+    async (
+      content: string,
+      uploadedFile?: UploadedFile | null
+    ) => {
       if (!content.trim()) return;
 
       setLoading(true);
-
       setError(null);
 
       try {
         let activeChatId = currentChatId;
-
-        /**
-         * First message
-         */
 
         if (!activeChatId) {
           const createRes = await fetch(
@@ -128,7 +127,9 @@ export default function useChat({
 
           setCurrentChatId(activeChatId);
 
-          onChatCreated?.(activeChatId);
+          if (activeChatId) {
+  onChatCreated?.(activeChatId);
+}
         }
 
         const response = await fetch(
@@ -141,6 +142,7 @@ export default function useChat({
             },
             body: JSON.stringify({
               message: content,
+              uploadedFile,
             }),
           }
         );

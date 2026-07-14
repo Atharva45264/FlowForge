@@ -149,19 +149,57 @@ export async function POST(
 
     chat.messages.push(userMessage);
 
-    const prompt = `
-${SYSTEM_PROMPT}
+ const uploadedFile = body.uploadedFile;
 
-User:
-${message}
-`;
+let response;
 
-    const response = await ai.models.generateContent({
-      model: GEMINI_MODEL,
-      contents: prompt,
-    });
+if (uploadedFile?.type === "pdf") {
+  response = await ai.models.generateContent({
+    model: GEMINI_MODEL,
 
-    const assistantMessage: IChatMessage = {
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            inlineData: {
+              mimeType: uploadedFile.mimeType,
+              data: uploadedFile.base64,
+            },
+          },
+          {
+            text: `${SYSTEM_PROMPT}
+
+Answer ONLY using the uploaded PDF whenever possible.
+
+User Question:
+
+${message}`,
+          },
+        ],
+      },
+    ],
+  });
+} else {
+  response = await ai.models.generateContent({
+    model: GEMINI_MODEL,
+
+    contents: [
+      {
+        role: "user",
+        parts: [
+          {
+            text: `${SYSTEM_PROMPT}
+
+${message}`,
+          },
+        ],
+      },
+    ],
+  });
+}
+
+const assistantMessage: IChatMessage = {
   id: crypto.randomUUID(),
   role: "assistant",
   content: response.text ?? "",
