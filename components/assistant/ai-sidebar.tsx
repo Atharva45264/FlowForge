@@ -7,32 +7,21 @@ import {
   FileText,
   ImageIcon,
   Mail,
-  Mic,
   MessageSquarePlus,
+  Mic,
   Sparkles,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
+import useChats from "@/hooks/use-chats";
+
 interface AISidebarProps {
   selectedConversation: string | null;
-  onSelectConversation: (id: string | null) => void;
+  onSelectConversation: (
+    id: string | null
+  ) => void;
 }
-
-const conversations = [
-  {
-    id: "1",
-    title: "Interview Preparation",
-  },
-  {
-    id: "2",
-    title: "Dashboard UI",
-  },
-  {
-    id: "3",
-    title: "Meeting Notes",
-  },
-];
 
 const quickActions = [
   {
@@ -69,6 +58,23 @@ export default function AISidebar({
   selectedConversation,
   onSelectConversation,
 }: AISidebarProps) {
+  const {
+    chats,
+    loading,
+    createChat,
+    creating,
+  } = useChats();
+
+  async function handleNewChat() {
+    try {
+      const chat = await createChat("New Chat");
+
+      onSelectConversation(chat._id);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <aside className="flex h-full flex-col">
 
@@ -76,17 +82,21 @@ export default function AISidebar({
 
       <div className="border-b p-5">
 
-        <Button className="w-full gap-2">
-
+        <Button
+          className="w-full gap-2"
+          onClick={handleNewChat}
+          disabled={creating}
+        >
           <MessageSquarePlus className="h-4 w-4" />
 
-          New Chat
-
+          {creating
+            ? "Creating..."
+            : "New Chat"}
         </Button>
 
       </div>
 
-      {/* Recent */}
+      {/* Chats */}
 
       <div className="flex-1 overflow-y-auto">
 
@@ -96,25 +106,37 @@ export default function AISidebar({
             Recent Chats
           </p>
 
-          <div className="space-y-2">
+          {loading ? (
+            <p className="text-sm text-muted-foreground">
+              Loading...
+            </p>
+          ) : chats.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No chats yet.
+            </p>
+          ) : (
+            <div className="space-y-2">
 
-            {conversations.map((chat) => (
+              {chats.map((chat) => (
 
-              <button
-                key={chat.id}
-                onClick={() => onSelectConversation(chat.id)}
-                className={`w-full rounded-lg px-3 py-2 text-left text-sm transition hover:bg-muted ${
-                  selectedConversation === chat.id
-                    ? "bg-muted"
-                    : ""
-                }`}
-              >
-                {chat.title}
-              </button>
+                <button
+                  key={chat._id}
+                  onClick={() =>
+                    onSelectConversation(chat._id)
+                  }
+                  className={`w-full rounded-lg px-3 py-2 text-left text-sm transition hover:bg-muted ${
+                    selectedConversation === chat._id
+                      ? "bg-muted"
+                      : ""
+                  }`}
+                >
+                  {chat.title}
+                </button>
 
-            ))}
+              ))}
 
-          </div>
+            </div>
+          )}
 
         </div>
 
