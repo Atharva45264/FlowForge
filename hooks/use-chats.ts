@@ -1,6 +1,10 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 export interface ChatItem {
   _id: string;
@@ -9,52 +13,83 @@ export interface ChatItem {
   updatedAt: string;
 }
 
-async function getChats(): Promise<ChatItem[]> {
+async function fetchChats(): Promise<ChatItem[]> {
   const res = await fetch("/api/assistant/chats");
 
   const data = await res.json();
 
   if (!res.ok || !data.success) {
     throw new Error(
-      data.error?.message || "Failed to fetch chats."
+      data.error?.message ??
+        "Failed to fetch chats."
     );
   }
 
   return data.data;
 }
 
-async function createChat(title: string): Promise<ChatItem> {
-  const res = await fetch("/api/assistant/chats", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      title,
-    }),
-  });
+async function renameChat({
+  chatId,
+  title,
+}: {
+  chatId: string;
+  title: string;
+}) {
+  const res = await fetch(
+    `/api/assistant/chats/${chatId}/manage`,
+    {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title,
+      }),
+    }
+  );
 
   const data = await res.json();
 
   if (!res.ok || !data.success) {
     throw new Error(
-      data.error?.message || "Failed to create chat."
+      data.error?.message ??
+        "Failed renaming chat."
     );
   }
 
   return data.data;
 }
 
+async function deleteChat(chatId: string) {
+  const res = await fetch(
+    `/api/assistant/chats/${chatId}/manage`,
+    {
+      method: "DELETE",
+    }
+  );
+
+  const data = await res.json();
+
+  if (!res.ok || !data.success) {
+    throw new Error(
+      data.error?.message ??
+        "Failed deleting chat."
+    );
+  }
+
+  return true;
+}
+
 export default function useChats() {
   const queryClient = useQueryClient();
 
-  const chatsQuery = useQuery({
+  const query = useQuery({
     queryKey: ["assistant-chats"],
-    queryFn: getChats,
+    queryFn: fetchChats,
   });
 
-  const createMutation = useMutation({
-    mutationFn: createChat,
+  const renameMutation = useMutation({
+    mutationFn: renameChat,
 
     onSuccess() {
       queryClient.invalidateQueries({
@@ -63,13 +98,38 @@ export default function useChats() {
     },
   });
 
-  return {
-    chats: chatsQuery.data ?? [],
-    loading: chatsQuery.isLoading,
-    error: chatsQuery.error,
-    refetch: chatsQuery.refetch,
+  const deleteMutation = useMutation({
+    mutationFn: deleteChat,
 
-    createChat: createMutation.mutateAsync,
-    creating: createMutation.isPending,
+    onSuccess() {
+      queryClient.invalidateQueries({
+        queryKey: ["assistant-chats"],
+      });
+    },
+  });
+
+  const refreshChats = () =>
+    queryClient.invalidateQueries({
+      queryKey: ["assistant-chats"],
+    });
+
+  return {
+    chats: query.data ?? [],
+    loading: query.isLoading,
+    error: query.error,
+
+    refreshChats,
+
+    renameChat:
+      renameMutation.mutateAsync,
+
+    deleteChat:
+      deleteMutation.mutateAsync,
+
+    renaming:
+      renameMutation.isPending,
+
+    deleting:
+      deleteMutation.isPending,
   };
 }

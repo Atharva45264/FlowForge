@@ -10,16 +10,33 @@ interface ChatResponse {
   messages: AIMessage[];
 }
 
-export default function useChat(chatId: string | null) {
+interface UseChatProps {
+  chatId: string | null;
+  onChatCreated?: (chatId: string) => void;
+}
+
+export default function useChat({
+  chatId,
+  onChatCreated,
+}: UseChatProps) {
+  const [currentChatId, setCurrentChatId] =
+    useState<string | null>(chatId);
+
   const [messages, setMessages] = useState<AIMessage[]>([]);
   const [loading, setLoading] = useState(false);
-  const [loadingChat, setLoadingChat] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [loadingChat, setLoadingChat] =
+    useState(false);
+  const [error, setError] = useState<string | null>(
+    null
+  );
 
-  // Load selected chat
+  useEffect(() => {
+    setCurrentChatId(chatId);
+  }, [chatId]);
+
   useEffect(() => {
     async function loadChat() {
-      if (!chatId) {
+      if (!currentChatId) {
         setMessages([]);
         return;
       }
@@ -27,21 +44,28 @@ export default function useChat(chatId: string | null) {
       try {
         setLoadingChat(true);
 
-        const res = await fetch(`/api/assistant/chats/${chatId}`);
+        const res = await fetch(
+          `/api/assistant/chats/${currentChatId}`
+        );
 
         const data = await res.json();
 
         if (!res.ok || !data.success) {
           throw new Error(
-            data.error?.message || "Failed loading chat."
+            data.error?.message ??
+              "Failed loading chat."
           );
         }
 
         setMessages(
-          data.data.messages.map((message: AIMessage) => ({
-            ...message,
-            createdAt: new Date(message.createdAt),
-          }))
+          data.data.messages.map(
+            (message: AIMessage) => ({
+              ...message,
+              createdAt: new Date(
+                message.createdAt
+              ),
+            })
+          )
         );
       } catch (err) {
         setError(
@@ -55,22 +79,65 @@ export default function useChat(chatId: string | null) {
     }
 
     loadChat();
-  }, [chatId]);
+  }, [currentChatId]);
 
   const sendMessage = useCallback(
     async (content: string) => {
-      if (!chatId || !content.trim()) return;
+      if (!content.trim()) return;
 
       setLoading(true);
+
       setError(null);
 
       try {
+        let activeChatId = currentChatId;
+
+        /**
+         * First message
+         */
+
+        if (!activeChatId) {
+          const createRes = await fetch(
+            "/api/assistant/chats",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type":
+                  "application/json",
+              },
+              body: JSON.stringify({
+                title: "New Chat",
+              }),
+            }
+          );
+
+          const createData =
+            await createRes.json();
+
+          if (
+            !createRes.ok ||
+            !createData.success
+          ) {
+            throw new Error(
+              createData.error?.message
+            );
+          }
+
+          activeChatId =
+            createData.data._id;
+
+          setCurrentChatId(activeChatId);
+
+          onChatCreated?.(activeChatId);
+        }
+
         const response = await fetch(
-          `/api/assistant/chats/${chatId}`,
+          `/api/assistant/chats/${activeChatId}`,
           {
             method: "POST",
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type":
+                "application/json",
             },
             body: JSON.stringify({
               message: content,
@@ -82,15 +149,20 @@ export default function useChat(chatId: string | null) {
 
         if (!response.ok || !data.success) {
           throw new Error(
-            data.error?.message || "Something went wrong."
+            data.error?.message ??
+              "Something went wrong."
           );
         }
 
         setMessages(
-          data.data.chat.messages.map((message: AIMessage) => ({
-            ...message,
-            createdAt: new Date(message.createdAt),
-          }))
+          data.data.chat.messages.map(
+            (message: AIMessage) => ({
+              ...message,
+              createdAt: new Date(
+                message.createdAt
+              ),
+            })
+          )
         );
       } catch (err) {
         setError(
@@ -102,7 +174,7 @@ export default function useChat(chatId: string | null) {
         setLoading(false);
       }
     },
-    [chatId]
+    [currentChatId, onChatCreated]
   );
 
   return {

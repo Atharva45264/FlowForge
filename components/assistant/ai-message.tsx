@@ -2,7 +2,14 @@
 
 import { useState } from "react";
 
-import { Bot, Check, Copy, User } from "lucide-react";
+import {
+  Bot,
+  Check,
+  Copy,
+  Square,
+  User,
+  Volume2,
+} from "lucide-react";
 
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -10,6 +17,8 @@ import remarkGfm from "remark-gfm";
 import { Button } from "@/components/ui/button";
 
 import type { AIMessage } from "@/types/ai";
+
+import useSpeech from "@/hooks/use-speech";
 
 interface AIMessageProps {
   message: AIMessage;
@@ -20,11 +29,19 @@ export default function AIMessage({
 }: AIMessageProps) {
   const [copied, setCopied] = useState(false);
 
+  const {
+    speak,
+    stopSpeaking,
+    speaking,
+  } = useSpeech();
+
   const isUser = message.role === "user";
 
   async function copyMessage() {
     try {
-      await navigator.clipboard.writeText(message.content);
+      await navigator.clipboard.writeText(
+        message.content
+      );
 
       setCopied(true);
 
@@ -32,14 +49,16 @@ export default function AIMessage({
         setCopied(false);
       }, 2000);
     } catch (error) {
-      console.error("Failed to copy:", error);
+      console.error(error);
     }
   }
 
   return (
     <div
       className={`flex gap-4 ${
-        isUser ? "justify-end" : "justify-start"
+        isUser
+          ? "justify-end"
+          : "justify-start"
       }`}
     >
       {!isUser && (
@@ -93,25 +112,52 @@ export default function AIMessage({
 
         <div className="mt-4 flex items-center justify-between border-t pt-3">
           <span className="text-xs opacity-70">
-            {message.createdAt.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            {message.createdAt.toLocaleTimeString(
+              [],
+              {
+                hour: "2-digit",
+                minute: "2-digit",
+              }
+            )}
           </span>
 
-          {!isUser && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={copyMessage}
-            >
-              {copied ? (
-                <Check className="h-4 w-4 text-green-500" />
-              ) : (
-                <Copy className="h-4 w-4" />
-              )}
-            </Button>
-          )}
+          <div className="flex items-center gap-1">
+
+            {!isUser && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  if (speaking) {
+                    stopSpeaking();
+                  } else {
+                    speak(message.content);
+                  }
+                }}
+              >
+                {speaking ? (
+                  <Square className="h-4 w-4 text-red-500" />
+                ) : (
+                  <Volume2 className="h-4 w-4" />
+                )}
+              </Button>
+            )}
+
+            {!isUser && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={copyMessage}
+              >
+                {copied ? (
+                  <Check className="h-4 w-4 text-green-500" />
+                ) : (
+                  <Copy className="h-4 w-4" />
+                )}
+              </Button>
+            )}
+
+          </div>
         </div>
       </div>
 
