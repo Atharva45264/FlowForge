@@ -1,8 +1,10 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
+export type ChatRole = "user" | "assistant";
+
 export interface IChatMessage {
   id: string;
-  role: "user" | "assistant";
+  role: ChatRole;
   content: string;
   createdAt: Date;
 }
