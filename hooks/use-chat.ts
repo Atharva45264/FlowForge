@@ -83,57 +83,72 @@ export default function useChat({
   }, [currentChatId]);
 
   const sendMessage = useCallback(
-    async (
-      content: string,
-      uploadedFile?: UploadedFile | null
-    ) => {
-      if (!content.trim()) return;
+  async (
+    content: string,
+    uploadedFile?: UploadedFile | null
+  ) => {
+    if (!content.trim()) return;
 
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
 
-      try {
-        let activeChatId = currentChatId;
+    try {
+      let activeChatId = currentChatId;
 
-        if (!activeChatId) {
-          const createRes = await fetch(
-            "/api/assistant/chats",
-            {
-              method: "POST",
-              headers: {
-                "Content-Type":
-                  "application/json",
-              },
-              body: JSON.stringify({
-                title: "New Chat",
-              }),
-            }
-          );
-
-          const createData =
-            await createRes.json();
-
-          if (
-            !createRes.ok ||
-            !createData.success
-          ) {
-            throw new Error(
-              createData.error?.message
-            );
+      // Create chat if none exists
+      if (!activeChatId) {
+        const createRes = await fetch(
+          "/api/assistant/chats",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              title: "New Chat",
+            }),
           }
+        );
 
-          activeChatId =
-            createData.data._id;
+        const createData = await createRes.json();
 
-          setCurrentChatId(activeChatId);
-
-          if (activeChatId) {
-  onChatCreated?.(activeChatId);
-}
+        if (
+          !createRes.ok ||
+          !createData.success
+        ) {
+          throw new Error(
+            createData.error?.message ??
+              "Failed creating chat."
+          );
         }
 
-        const response = await fetch(
-          `/api/assistant/chats/${activeChatId}`,
+        activeChatId = createData.data._id;
+
+        setCurrentChatId(activeChatId);
+
+        if (activeChatId) {
+          onChatCreated?.(activeChatId);
+        }
+      }
+
+      // -------------------------
+      // Calendar Intent Detection
+      // -------------------------
+
+      const lowerMessage =
+        content.toLowerCase();
+
+      const isCalendarRequest =
+        lowerMessage.includes("schedule") ||
+        lowerMessage.includes("meeting") ||
+        lowerMessage.includes("appointment") ||
+        lowerMessage.includes("calendar") ||
+        lowerMessage.includes("remind") ||
+        lowerMessage.includes("event");
+
+      if (isCalendarRequest) {
+        const calendarRes = await fetch(
+          "/api/assistant/calendar",
           {
             method: "POST",
             headers: {
@@ -141,43 +156,103 @@ export default function useChat({
                 "application/json",
             },
             body: JSON.stringify({
-              message: content,
-              uploadedFile,
+              prompt: content,
             }),
           }
         );
 
-        const data = await response.json();
+        const calendarData =
+          await calendarRes.json();
 
-        if (!response.ok || !data.success) {
+        if (
+          !calendarRes.ok ||
+          !calendarData.success
+        ) {
           throw new Error(
-            data.error?.message ??
-              "Something went wrong."
+            calendarData.error?.message ??
+              "Failed creating calendar event."
           );
         }
 
-        setMessages(
-          data.data.chat.messages.map(
-            (message: AIMessage) => ({
-              ...message,
-              createdAt: new Date(
-                message.createdAt
-              ),
-            })
-          )
-        );
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Unexpected error"
-        );
-      } finally {
-        setLoading(false);
+        const userMessage: AIMessage = {
+          id: crypto.randomUUID(),
+          role: "user",
+          content,
+          createdAt: new Date(),
+        };
+
+        const assistantMessage: AIMessage = {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: `## ✅ Event Created Successfully
+
+**Title:** ${calendarData.data.title}
+
+**Date:** ${calendarData.data.date}
+
+**Time:** ${calendarData.data.startTime} - ${calendarData.data.endTime}`,
+          createdAt: new Date(),
+        };
+
+        setMessages((prev) => [
+          ...prev,
+          userMessage,
+          assistantMessage,
+        ]);
+
+        return;
       }
-    },
-    [currentChatId, onChatCreated]
-  );
+
+      // -------------------------
+      // Normal Chat / PDF / Image
+      // -------------------------
+
+      const response = await fetch(
+        `/api/assistant/chats/${activeChatId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            message: content,
+            uploadedFile,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.error?.message ??
+            "Something went wrong."
+        );
+      }
+
+      setMessages(
+        data.data.chat.messages.map(
+          (message: AIMessage) => ({
+            ...message,
+            createdAt: new Date(
+              message.createdAt
+            ),
+          })
+        )
+      );
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unexpected error"
+      );
+    } finally {
+      setLoading(false);
+    }
+  },
+  [currentChatId, onChatCreated]
+);
 
   return {
     messages,

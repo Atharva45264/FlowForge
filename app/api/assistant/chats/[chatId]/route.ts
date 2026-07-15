@@ -4,8 +4,12 @@ import { auth } from "@clerk/nextjs/server";
 import connectDB from "@/lib/mongodb";
 import Chat, { type IChatMessage } from "@/models/Chat";
 
-import { ai, GEMINI_MODEL } from "@/lib/assistant/client";
-import { SYSTEM_PROMPT } from "@/lib/assistant/prompts";
+import { detectTool } from "@/lib/assistant/tools/router";
+
+import { runChatTool } from "@/lib/assistant/tools/chat";
+import { runPDFTool } from "@/lib/assistant/tools/pdf";
+import { runImageTool } from "@/lib/assistant/tools/image";
+import { runCalendarTool } from "@/lib/assistant/tools/calendar";
 
 interface Params {
   params: Promise<{
@@ -151,66 +155,64 @@ export async function POST(
 
  const uploadedFile = body.uploadedFile;
 
-let response;
+const tool = detectTool(
+  message,
+  uploadedFile
+);
 
-if (uploadedFile) {
-  response = await ai.models.generateContent({
-    model: GEMINI_MODEL,
-    contents: [
-      {
-        role: "user",
-        parts: [
-          {
-            inlineData: {
-              mimeType: uploadedFile.mimeType,
-              data: uploadedFile.base64,
-            },
-          },
-          {
-            text: `
-${SYSTEM_PROMPT}
+let assistantResponse = "";
 
-The user has uploaded a ${uploadedFile.type}.
+let metadata = null;
 
-If it is:
-- a PDF, answer questions using the PDF.
-- an image, analyze the image and answer based on its contents.
+switch (tool) {
+  case "calendar": {
+    const result =
+      await runCalendarTool(
+        userId,
+        message
+      );
 
-User Question:
+    assistantResponse =
+      result.response;
 
-${message}
-            `,
-          },
-        ],
-      },
-    ],
-  });
-} else {
-  response = await ai.models.generateContent({
-    model: GEMINI_MODEL,
-    contents: [
-      {
-        role: "user",
-        parts: [
-          {
-            text: `
-${SYSTEM_PROMPT}
+    metadata =
+      result.metadata;
 
-User Question:
+    break;
+  }
 
-${message}
-            `,
-          },
-        ],
-      },
-    ],
-  });
+  case "pdf": {
+    assistantResponse =
+      await runPDFTool(
+        message,
+        uploadedFile
+      );
+
+    break;
+  }
+
+  case "image": {
+    assistantResponse =
+      await runImageTool(
+        message,
+        uploadedFile
+      );
+
+    break;
+  }
+
+  default: {
+    assistantResponse =
+      await runChatTool(
+        message
+      );
+  }
 }
 
 const assistantMessage: IChatMessage = {
   id: crypto.randomUUID(),
   role: "assistant",
-  content: response.text ?? "",
+  content: assistantResponse,
   createdAt: new Date(),
 };
 
