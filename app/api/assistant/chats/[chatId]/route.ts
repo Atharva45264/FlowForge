@@ -153,10 +153,9 @@ export async function POST(
 
 let response;
 
-if (uploadedFile?.type === "pdf") {
+if (uploadedFile) {
   response = await ai.models.generateContent({
     model: GEMINI_MODEL,
-
     contents: [
       {
         role: "user",
@@ -168,13 +167,19 @@ if (uploadedFile?.type === "pdf") {
             },
           },
           {
-            text: `${SYSTEM_PROMPT}
+            text: `
+${SYSTEM_PROMPT}
 
-Answer ONLY using the uploaded PDF whenever possible.
+The user has uploaded a ${uploadedFile.type}.
+
+If it is:
+- a PDF, answer questions using the PDF.
+- an image, analyze the image and answer based on its contents.
 
 User Question:
 
-${message}`,
+${message}
+            `,
           },
         ],
       },
@@ -183,15 +188,18 @@ ${message}`,
 } else {
   response = await ai.models.generateContent({
     model: GEMINI_MODEL,
-
     contents: [
       {
         role: "user",
         parts: [
           {
-            text: `${SYSTEM_PROMPT}
+            text: `
+${SYSTEM_PROMPT}
 
-${message}`,
+User Question:
+
+${message}
+            `,
           },
         ],
       },

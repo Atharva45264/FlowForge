@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-
+import useImageTool from "@/hooks/use-image-tool";
 import useVoice from "@/hooks/use-voice";
 import usePDFTool from "@/hooks/use-pdf-tool";
 
@@ -42,6 +42,9 @@ export default function AIInput({
   const fileInputRef =
     useRef<HTMLInputElement>(null);
 
+  const imageInputRef =
+  useRef<HTMLInputElement>(null);
+
   const {
     transcript,
     listening,
@@ -51,9 +54,14 @@ export default function AIInput({
   } = useVoice();
 
   const {
-    uploading,
-    upload,
-  } = usePDFTool();
+  uploading: pdfUploading,
+  upload: uploadPDF,
+} = usePDFTool();
+
+const {
+  uploading: imageUploading,
+  upload: uploadImage,
+} = useImageTool();
 
   useEffect(() => {
     if (transcript) {
@@ -81,7 +89,7 @@ export default function AIInput({
     if (!file) return;
 
     try {
-      const uploaded = await upload(file);
+      const uploaded = await uploadPDF(file);
 
       setUploadedFile(uploaded);
     } catch (err) {
@@ -92,6 +100,25 @@ export default function AIInput({
     e.target.value = "";
   }
 
+  async function handleImageChange(
+  e: React.ChangeEvent<HTMLInputElement>
+) {
+  const file = e.target.files?.[0];
+
+  if (!file) return;
+
+  try {
+    const uploaded = await uploadImage(file);
+
+    setUploadedFile(uploaded);
+  } catch (err) {
+    console.error(err);
+    alert("Failed uploading image.");
+  }
+
+  e.target.value = "";
+}
+
   return (
     <div className="border-t bg-background p-4">
 
@@ -100,7 +127,11 @@ export default function AIInput({
 
           <div className="flex items-center gap-2">
 
-            <FileText className="h-4 w-4 text-red-500" />
+            {uploadedFile.type === "pdf" ? (
+  <FileText className="h-4 w-4 text-red-500" />
+) : (
+  <ImageIcon className="h-4 w-4 text-blue-500" />
+)}
 
             <span className="text-sm">
               {uploadedFile.fileName}
@@ -130,18 +161,27 @@ export default function AIInput({
           className="hidden"
           onChange={handlePDFChange}
         />
+        <input
+  ref={imageInputRef}
+  type="file"
+  accept="image/*"
+  className="hidden"
+  onChange={handleImageChange}
+/>
 
         <Button
           variant="ghost"
           size="icon"
           disabled={
-            loading || uploading
-          }
+  loading ||
+  pdfUploading ||
+  imageUploading
+}
           onClick={() =>
             fileInputRef.current?.click()
           }
         >
-          {uploading ? (
+          {pdfUploading ? (
             <Loader2 className="h-5 w-5 animate-spin" />
           ) : (
             <Paperclip className="h-5 w-5" />
@@ -149,12 +189,19 @@ export default function AIInput({
         </Button>
 
         <Button
-          variant="ghost"
-          size="icon"
-          disabled
-        >
-          <ImageIcon className="h-5 w-5" />
-        </Button>
+  variant="ghost"
+  size="icon"
+  disabled={loading || imageUploading}
+  onClick={() =>
+    imageInputRef.current?.click()
+  }
+>
+  {imageUploading ? (
+    <Loader2 className="h-5 w-5 animate-spin" />
+  ) : (
+    <ImageIcon className="h-5 w-5" />
+  )}
+</Button>
 
         <Button
           variant={
