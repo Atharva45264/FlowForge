@@ -6,7 +6,7 @@ import { CalendarTask } from "@/components/calendar/calendar-types";
 
 type CalendarStore = {
   tasks: CalendarTask[];
-
+  setTasks: (tasks: CalendarTask[]) => void;
   draftTasks: CalendarTask[];
 
   createDraftTask: (title: string, category: string) => void;
@@ -22,7 +22,10 @@ type CalendarStore = {
 
 export const useCalendarStore = create<CalendarStore>((set) => ({
   tasks: scheduledTasks,
-
+  setTasks: (tasks) =>
+  set({
+    tasks,
+  }),
   draftTasks,
 
   createDraftTask: (title, category) =>

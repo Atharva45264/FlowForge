@@ -12,6 +12,7 @@ import { CalendarGrid } from "@/components/calendar/calendar-grid";
 import { TaskDialog } from "@/components/calendar/task-dialog";
 import { WeekCalendarGrid } from "@/components/calendar/week-calendar-grid";
 import { useCalendarStore } from "@/store/calendar-store";
+import useCalendar from "@/hooks/use-calendar";
 
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -25,6 +26,8 @@ export default function CalendarPage() {
   const scheduleTask = useCalendarStore((state) => state.scheduleTask);
 
   const moveTask = useCalendarStore((state) => state.moveTask);
+
+  const { loading } = useCalendar();
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -41,7 +44,13 @@ export default function CalendarPage() {
 
     moveTask(String(active.id), String(over.id));
   };
-
+if (loading) {
+  return (
+    <div className="flex h-[70vh] items-center justify-center">
+      Loading Calendar...
+    </div>
+  );
+}
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div className="space-y-6">
