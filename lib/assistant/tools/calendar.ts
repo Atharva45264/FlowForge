@@ -1,6 +1,6 @@
 import connectDB from "@/lib/mongodb";
 import CalendarEvent from "@/models/CalendarEvent";
-
+import { createGoogleCalendarEvent } from "@/lib/google/calendar";
 import { ai, GEMINI_MODEL } from "../client";
 
 export async function runCalendarTool(
@@ -71,6 +71,20 @@ ${prompt}`,
       ...event,
       createdBy: "ai",
     });
+
+  await createGoogleCalendarEvent(
+  userId,
+  {
+    title: created.title,
+    description:
+      created.description,
+    date: created.date,
+    startTime:
+      created.startTime,
+    endTime:
+      created.endTime,
+  }
+);
 
   return {
     response: `✅ **Event Created Successfully**
