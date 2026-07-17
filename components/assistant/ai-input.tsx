@@ -14,18 +14,17 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+
 import useImageTool from "@/hooks/use-image-tool";
-import useVoice from "@/hooks/use-voice";
 import usePDFTool from "@/hooks/use-pdf-tool";
+import useVoice from "@/hooks/use-voice";
 
 import type { UploadedFile } from "./ai-layout";
 
 interface AIInputProps {
   onSend: (message: string) => Promise<void>;
   loading: boolean;
-
   uploadedFile: UploadedFile | null;
-
   setUploadedFile: React.Dispatch<
     React.SetStateAction<UploadedFile | null>
   >;
@@ -43,7 +42,10 @@ export default function AIInput({
     useRef<HTMLInputElement>(null);
 
   const imageInputRef =
-  useRef<HTMLInputElement>(null);
+    useRef<HTMLInputElement>(null);
+
+  const textareaRef =
+    useRef<HTMLTextAreaElement>(null);
 
   const {
     transcript,
@@ -54,14 +56,14 @@ export default function AIInput({
   } = useVoice();
 
   const {
-  uploading: pdfUploading,
-  upload: uploadPDF,
-} = usePDFTool();
+    uploading: pdfUploading,
+    upload: uploadPDF,
+  } = usePDFTool();
 
-const {
-  uploading: imageUploading,
-  upload: uploadImage,
-} = useImageTool();
+  const {
+    uploading: imageUploading,
+    upload: uploadImage,
+  } = useImageTool();
 
   useEffect(() => {
     if (transcript) {
@@ -69,8 +71,19 @@ const {
     }
   }, [transcript]);
 
+  useEffect(() => {
+    const textarea = textareaRef.current;
+
+    if (!textarea) return;
+
+    textarea.style.height = "0px";
+    textarea.style.height =
+      textarea.scrollHeight + "px";
+  }, [message]);
+
   async function handleSend() {
-    if (!message.trim() || loading) return;
+    if (!message.trim() || loading)
+      return;
 
     const text = message;
 
@@ -89,7 +102,8 @@ const {
     if (!file) return;
 
     try {
-      const uploaded = await uploadPDF(file);
+      const uploaded =
+        await uploadPDF(file);
 
       setUploadedFile(uploaded);
     } catch (err) {
@@ -101,58 +115,29 @@ const {
   }
 
   async function handleImageChange(
-  e: React.ChangeEvent<HTMLInputElement>
-) {
-  const file = e.target.files?.[0];
+    e: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = e.target.files?.[0];
 
-  if (!file) return;
+    if (!file) return;
 
-  try {
-    const uploaded = await uploadImage(file);
+    try {
+      const uploaded =
+        await uploadImage(file);
 
-    setUploadedFile(uploaded);
-  } catch (err) {
-    console.error(err);
-    alert("Failed uploading image.");
+      setUploadedFile(uploaded);
+    } catch (err) {
+      console.error(err);
+      alert("Failed uploading image.");
+    }
+
+    e.target.value = "";
   }
 
-  e.target.value = "";
-}
-
   return (
-    <div className="border-t bg-background p-4">
+    <div className="sticky bottom-0 z-20 border-t bg-background/80 px-6 pb-6 pt-4 backdrop-blur-xl">
 
-      {uploadedFile && (
-        <div className="mb-3 flex items-center justify-between rounded-lg border bg-muted px-3 py-2">
-
-          <div className="flex items-center gap-2">
-
-            {uploadedFile.type === "pdf" ? (
-  <FileText className="h-4 w-4 text-red-500" />
-) : (
-  <ImageIcon className="h-4 w-4 text-blue-500" />
-)}
-
-            <span className="text-sm">
-              {uploadedFile.fileName}
-            </span>
-
-          </div>
-
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() =>
-              setUploadedFile(null)
-            }
-          >
-            <X className="h-4 w-4" />
-          </Button>
-
-        </div>
-      )}
-
-      <div className="flex items-end gap-3 rounded-2xl border bg-card p-3">
+      <div className="mx-auto w-full max-w-5xl rounded-[30px] border bg-background shadow-2xl">
 
         <input
           ref={fileInputRef}
@@ -161,111 +146,187 @@ const {
           className="hidden"
           onChange={handlePDFChange}
         />
+
         <input
-  ref={imageInputRef}
-  type="file"
-  accept="image/*"
-  className="hidden"
-  onChange={handleImageChange}
-/>
-
-        <Button
-          variant="ghost"
-          size="icon"
-          disabled={
-  loading ||
-  pdfUploading ||
-  imageUploading
-}
-          onClick={() =>
-            fileInputRef.current?.click()
-          }
-        >
-          {pdfUploading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
-          ) : (
-            <Paperclip className="h-5 w-5" />
-          )}
-        </Button>
-
-        <Button
-  variant="ghost"
-  size="icon"
-  disabled={loading || imageUploading}
-  onClick={() =>
-    imageInputRef.current?.click()
-  }
->
-  {imageUploading ? (
-    <Loader2 className="h-5 w-5 animate-spin" />
-  ) : (
-    <ImageIcon className="h-5 w-5" />
-  )}
-</Button>
-
-        <Button
-          variant={
-            listening
-              ? "destructive"
-              : "ghost"
-          }
-          size="icon"
-          onClick={() => {
-            if (listening) {
-              stopListening();
-            } else {
-              clearTranscript();
-              startListening();
-            }
-          }}
-        >
-          {listening ? (
-            <Square className="h-4 w-4" />
-          ) : (
-            <Mic className="h-5 w-5" />
-          )}
-        </Button>
-
-        <textarea
-          rows={1}
-          value={message}
-          disabled={loading}
-          onChange={(e) =>
-            setMessage(e.target.value)
-          }
-          onKeyDown={(e) => {
-            if (
-              e.key === "Enter" &&
-              !e.shiftKey
-            ) {
-              e.preventDefault();
-              handleSend();
-            }
-          }}
-          placeholder={
-            listening
-              ? "Listening..."
-              : uploadedFile
-              ? "Ask anything about your document..."
-              : "Ask FlowForge AI..."
-          }
-          className="max-h-40 min-h-11 flex-1 resize-none bg-transparent outline-none"
+          ref={imageInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleImageChange}
         />
 
-        <Button
-          size="icon"
-          disabled={
-            loading ||
-            !message.trim()
-          }
-          onClick={handleSend}
-        >
-          {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : (
-            <SendHorizontal className="h-4 w-4" />
-          )}
-        </Button>
+        {uploadedFile && (
+          <div className="border-b px-5 py-4">
+
+            <div className="flex items-center justify-between rounded-2xl border bg-muted/40 px-4 py-3">
+
+              <div className="flex items-center gap-3">
+
+                {uploadedFile.type ===
+                "pdf" ? (
+                  <FileText className="h-5 w-5 text-red-500" />
+                ) : (
+                  <ImageIcon className="h-5 w-5 text-blue-500" />
+                )}
+
+                <div>
+
+                  <p className="text-sm font-medium">
+
+                    {uploadedFile.fileName}
+
+                  </p>
+
+                  <p className="text-xs text-muted-foreground">
+
+                    Attached
+
+                  </p>
+
+                </div>
+
+              </div>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() =>
+                  setUploadedFile(null)
+                }
+                className="rounded-xl"
+              >
+                <X className="h-4 w-4" />
+              </Button>
+
+            </div>
+
+          </div>
+        )}
+
+        <div className="flex items-end gap-3 p-4">
+                    <Button
+            variant="ghost"
+            size="icon"
+            className="h-11 w-11 rounded-2xl transition-all hover:bg-muted"
+            disabled={
+              loading ||
+              pdfUploading ||
+              imageUploading
+            }
+            onClick={() =>
+              fileInputRef.current?.click()
+            }
+          >
+            {pdfUploading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Paperclip className="h-5 w-5" />
+            )}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-11 w-11 rounded-2xl transition-all hover:bg-muted"
+            disabled={
+              loading ||
+              imageUploading
+            }
+            onClick={() =>
+              imageInputRef.current?.click()
+            }
+          >
+            {imageUploading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <ImageIcon className="h-5 w-5" />
+            )}
+          </Button>
+
+          <Button
+            variant={
+              listening
+                ? "destructive"
+                : "ghost"
+            }
+            size="icon"
+            className={`h-11 w-11 rounded-2xl transition-all ${
+              listening
+                ? "animate-pulse shadow-lg"
+                : "hover:bg-muted"
+            }`}
+            onClick={() => {
+              if (listening) {
+                stopListening();
+              } else {
+                clearTranscript();
+                startListening();
+              }
+            }}
+          >
+            {listening ? (
+              <Square className="h-4 w-4" />
+            ) : (
+              <Mic className="h-5 w-5" />
+            )}
+          </Button>
+
+          <textarea
+            ref={textareaRef}
+            rows={1}
+            value={message}
+            disabled={loading}
+            onChange={(e) =>
+              setMessage(e.target.value)
+            }
+            onKeyDown={(e) => {
+              if (
+                e.key === "Enter" &&
+                !e.shiftKey
+              ) {
+                e.preventDefault();
+                handleSend();
+              }
+            }}
+            placeholder={
+              listening
+                ? "Listening..."
+                : uploadedFile
+                ? "Ask anything about your attachment..."
+                : "Message FlowForge AI..."
+            }
+            className="max-h-52 min-h-11.5 flex-1 resize-none bg-transparent px-2 py-2 text-[15px] leading-7 placeholder:text-muted-foreground focus:outline-none"
+          />
+
+          <Button
+            size="icon"
+            disabled={
+              loading ||
+              !message.trim()
+            }
+            onClick={handleSend}
+            className="h-11 w-11 rounded-2xl shadow-md transition-all hover:scale-105"
+          >
+            {loading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <SendHorizontal className="h-5 w-5" />
+            )}
+          </Button>
+
+        </div>
+
+        <div className="flex items-center justify-between border-t px-5 py-3 text-xs text-muted-foreground">
+
+          <span>
+            Press <kbd className="rounded border px-1.5 py-0.5">Enter</kbd> to send
+          </span>
+
+          <span>
+            Shift + Enter for a new line
+          </span>
+
+        </div>
 
       </div>
 

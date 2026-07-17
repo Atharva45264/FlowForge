@@ -1,24 +1,14 @@
 "use client";
 
-import { useState } from "react";
-
 import {
   Bot,
-  Check,
-  Copy,
-  Square,
   User,
-  Volume2,
 } from "lucide-react";
 
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-
-import { Button } from "@/components/ui/button";
+import MarkdownRenderer from "./markdown-renderer";
+import MessageActions from "./message-actions";
 
 import type { AIMessage } from "@/types/ai";
-
-import useSpeech from "@/hooks/use-speech";
 
 interface AIMessageProps {
   message: AIMessage;
@@ -27,145 +17,98 @@ interface AIMessageProps {
 export default function AIMessage({
   message,
 }: AIMessageProps) {
-  const [copied, setCopied] = useState(false);
-
-  const {
-    speak,
-    stopSpeaking,
-    speaking,
-  } = useSpeech();
-
-  const isUser = message.role === "user";
-
-  async function copyMessage() {
-    try {
-      await navigator.clipboard.writeText(
-        message.content
-      );
-
-      setCopied(true);
-
-      setTimeout(() => {
-        setCopied(false);
-      }, 2000);
-    } catch (error) {
-      console.error(error);
-    }
-  }
+  const isUser =
+    message.role === "user";
 
   return (
     <div
-      className={`flex gap-4 ${
+      className={`group flex w-full animate-in fade-in slide-in-from-bottom-2 duration-300 ${
         isUser
           ? "justify-end"
           : "justify-start"
       }`}
     >
       {!isUser && (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
-          <Bot className="h-5 w-5 text-primary" />
+        <div className="mr-4 mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
+
+          <Bot className="h-5 w-5" />
+
         </div>
       )}
 
       <div
-        className={`max-w-[80%] rounded-2xl border px-5 py-4 shadow-sm ${
+        className={`max-w-[82%] ${
           isUser
-            ? "bg-primary text-primary-foreground"
-            : "bg-card"
+            ? "order-1"
+            : ""
         }`}
       >
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm]}
-          components={{
-            code({ children }) {
-              return (
-                <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-sm">
-                  {children}
-                </code>
-              );
-            },
-
-            pre({ children }) {
-              return (
-                <pre className="my-4 overflow-x-auto rounded-lg bg-muted p-4 text-sm">
-                  {children}
-                </pre>
-              );
-            },
-
-            a({ href, children }) {
-              return (
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-500 underline"
-                >
-                  {children}
-                </a>
-              );
-            },
-          }}
+        <div
+          className={`overflow-hidden rounded-3xl border shadow-sm transition-all duration-200 hover:shadow-md ${
+            isUser
+              ? "rounded-tr-lg border-primary bg-linear-to-br from-primary to-primary/90 text-primary-foreground"
+              : "rounded-tl-lg bg-card"
+          }`}
         >
-          {message.content}
-        </ReactMarkdown>
+          <div className="px-6 py-5">
 
-        <div className="mt-4 flex items-center justify-between border-t pt-3">
-          <span className="text-xs opacity-70">
-            {message.createdAt.toLocaleTimeString(
-              [],
-              {
-                hour: "2-digit",
-                minute: "2-digit",
-              }
-            )}
-          </span>
-
-          <div className="flex items-center gap-1">
-
-            {!isUser && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  if (speaking) {
-                    stopSpeaking();
-                  } else {
-                    speak(message.content);
-                  }
-                }}
-              >
-                {speaking ? (
-                  <Square className="h-4 w-4 text-red-500" />
-                ) : (
-                  <Volume2 className="h-4 w-4" />
-                )}
-              </Button>
-            )}
-
-            {!isUser && (
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={copyMessage}
-              >
-                {copied ? (
-                  <Check className="h-4 w-4 text-green-500" />
-                ) : (
-                  <Copy className="h-4 w-4" />
-                )}
-              </Button>
+            {isUser ? (
+              <div className="whitespace-pre-wrap wrap-break-word text-[15px] leading-7">
+                {message.content}
+              </div>
+            ) : (
+              <MarkdownRenderer
+                content={message.content}
+              />
             )}
 
           </div>
         </div>
+
+        <div
+          className={`mt-2 flex items-center ${
+            isUser
+              ? "justify-end"
+              : "justify-between"
+          }`}
+        >
+          {!isUser && (
+            <span className="ml-2 text-xs text-muted-foreground">
+              FlowForge AI
+            </span>
+          )}
+
+          <div className="flex items-center gap-3">
+
+            <span className="text-xs text-muted-foreground">
+              {message.createdAt.toLocaleTimeString(
+                [],
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              )}
+            </span>
+
+            {!isUser && (
+              <MessageActions
+                content={message.content}
+              />
+            )}
+                      </div>
+
+        </div>
+
       </div>
 
       {isUser && (
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary">
-          <User className="h-5 w-5 text-primary-foreground" />
+        <div className="ml-4 mt-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-primary/80 text-primary-foreground shadow-md">
+
+          <User className="h-5 w-5" />
+
         </div>
       )}
+
     </div>
   );
 }

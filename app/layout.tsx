@@ -1,6 +1,7 @@
 import { ClerkProvider } from '@clerk/nextjs';
 import "./globals.css";
 import "@excalidraw/excalidraw/index.css";
+import "highlight.js/styles/github-dark.css";
 import type { Metadata } from "next";
 import {
   AppLiveblocksProvider,
