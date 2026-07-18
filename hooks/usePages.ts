@@ -191,3 +191,19 @@ export function useArchivePage() {
     },
   });
 }
+
+export function usePagesBySpace(spaceId?: string) {
+  return useQuery({
+    queryKey: ["pages", spaceId],
+    queryFn: async () => {
+      if (!spaceId) return [];
+
+      const res = await fetch(
+        `/api/pages?spaceId=${spaceId}`
+      );
+
+      return res.json();
+    },
+    enabled: !!spaceId,
+  });
+}

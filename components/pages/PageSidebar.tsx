@@ -7,13 +7,21 @@ import {
   Archive,
   Plus,
   FolderOpen,
+  ChevronDown,
+  ChevronRight,
+  FileText,
 } from "lucide-react";
 
 import { useSpaces } from "@/hooks/useSpaces";
+import { usePagesBySpace } from "@/hooks/usePages";
 import { usePageStore } from "@/store/pageStore";
+import { useState } from "react";
 
 export default function PageSidebar() {
   const { data: spaces = [], isLoading } = useSpaces();
+
+  const [expandedSpace, setExpandedSpace] =
+  useState<string | null>(null);
 
   const {
     selectedSpaceId,
@@ -118,40 +126,17 @@ export default function PageSidebar() {
           <div className="space-y-1 px-2">
 
             {spaces.map((space) => (
-              <button
-                key={space._id}
-                onClick={() =>
-                  setSelectedSpaceId(space._id)
-                }
-                className={`w-full rounded-lg px-3 py-2 text-left transition ${
-                  selectedSpaceId === space._id
-                    ? "bg-primary text-primary-foreground"
-                    : "hover:bg-muted"
-                }`}
-              >
-
-                <div className="flex items-center gap-3">
-
-                  <span className="text-lg">
-                    {space.icon}
-                  </span>
-
-                  <div className="min-w-0 flex-1">
-
-                    <p className="truncate font-medium">
-                      {space.name}
-                    </p>
-
-                    <p className="text-xs opacity-70">
-                      {space.pageCount} Pages
-                    </p>
-
-                  </div>
-
-                </div>
-
-              </button>
-            ))}
+  <SpaceItem
+    key={space._id}
+    space={space}
+    expanded={expandedSpace === space._id}
+    onToggle={() =>
+      setExpandedSpace((prev) =>
+        prev === space._id ? null : space._id
+      )
+    }
+  />
+))}
 
           </div>
         )}
@@ -203,5 +188,92 @@ function SidebarButton({
 
       {label}
     </button>
+  );
+}
+
+interface SpaceItemProps {
+  space: any;
+  expanded: boolean;
+  onToggle: () => void;
+}
+
+function SpaceItem({
+  space,
+  expanded,
+  onToggle,
+}: SpaceItemProps) {
+  const {
+    selectedSpaceId,
+    selectedPageId,
+    setSelectedSpaceId,
+    setSelectedPageId,
+  } = usePageStore();
+
+  const { data: pages = [] } =
+    usePagesBySpace(space._id);
+
+  return (
+    <div className="rounded-xl">
+
+      <button
+        onClick={() => {
+          setSelectedSpaceId(space._id);
+          onToggle();
+        }}
+        className={`flex w-full items-center rounded-xl px-3 py-2 transition ${
+          selectedSpaceId === space._id
+            ? "bg-primary text-primary-foreground"
+            : "hover:bg-muted"
+        }`}
+      >
+        {expanded ? (
+          <ChevronDown className="mr-2 h-4 w-4" />
+        ) : (
+          <ChevronRight className="mr-2 h-4 w-4" />
+        )}
+
+        <span className="mr-2 text-lg">
+          {space.icon}
+        </span>
+
+        <div className="flex-1 text-left">
+
+          <p className="font-medium">
+            {space.name}
+          </p>
+
+          <p className="text-xs opacity-70">
+            {space.pageCount} Pages
+          </p>
+
+        </div>
+
+      </button>
+
+      {expanded && (
+        <div className="ml-10 mt-1 space-y-1">
+
+          {pages.map((page: any) => (
+            <button
+              key={page._id}
+              onClick={() =>
+                setSelectedPageId(page._id)
+              }
+              className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition ${
+                selectedPageId === page._id
+                  ? "bg-muted font-medium"
+                  : "hover:bg-muted"
+              }`}
+            >
+              <FileText className="h-4 w-4" />
+
+              {page.title}
+            </button>
+          ))}
+
+        </div>
+      )}
+
+    </div>
   );
 }

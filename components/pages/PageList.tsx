@@ -1,161 +1,57 @@
 "use client";
 
-import { FilePlus2, FileText } from "lucide-react";
+import { FileText, Sparkles } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-
-import { usePages } from "@/hooks/usePages";
-import { useSpaces } from "@/hooks/useSpaces";
 import { usePageStore } from "@/store/pageStore";
+import PageEditor from "./editor/PageEditor";
 import CreatePageModal from "./CreatePageModal";
 
 export default function PageList() {
-  const {
-    selectedSpaceId,
-    selectedPageId,
-    setSelectedPageId,
-    setCreatePageOpen,
-  } = usePageStore();
-
-  const { data: spaces = [] } = useSpaces();
-
-  const { data: pages = [], isLoading } = usePages(
-    selectedSpaceId || undefined
-  );
-
-  const space = spaces.find(
-    (s) => s._id === selectedSpaceId
-  );
-
-  if (!selectedSpaceId) {
-    return null;
-  }
+  const { selectedPageId } = usePageStore();
 
   return (
-    <div className="flex h-full">
+    <>
+      <div className="h-full bg-background">
+        {selectedPageId ? (
+          <PageEditor pageId={selectedPageId} />
+        ) : (
+          <div className="flex h-full items-center justify-center">
+            <div className="max-w-md text-center">
+              <div className="mx-auto mb-8 flex h-24 w-24 items-center justify-center rounded-3xl bg-primary/10">
+                <FileText className="h-12 w-12 text-primary" />
+              </div>
 
-      {/* Page List */}
-
-      <div className="w-96 border-r bg-background">
-
-        <div className="border-b p-6">
-
-          <div className="flex items-center gap-3">
-
-            <span className="text-3xl">
-              {space?.icon}
-            </span>
-
-            <div>
-
-              <h2 className="text-2xl font-bold">
-                {space?.name}
+              <h2 className="text-3xl font-bold tracking-tight">
+                Welcome to Pages
               </h2>
 
-              <p className="text-sm text-muted-foreground">
-                {space?.pageCount} Pages
+              <p className="mt-4 text-muted-foreground leading-7">
+                Select a page from the left sidebar to start writing,
+                or create a new page inside one of your spaces.
               </p>
 
-            </div>
-
-          </div>
-
-          <Button
-  className="mt-5 w-full"
-  onClick={() => setCreatePageOpen(true)}
->
-            <FilePlus2 className="mr-2 h-4 w-4" />
-            New Page
-          </Button>
-
-        </div>
-
-        <div className="overflow-y-auto">
-
-          {isLoading ? (
-            <div className="p-5">
-              Loading...
-            </div>
-          ) : pages.length === 0 ? (
-            <div className="p-5 text-sm text-muted-foreground">
-              No pages yet.
-            </div>
-          ) : (
-            pages.map((page) => (
-              <button
-                key={page._id}
-                onClick={() =>
-                  setSelectedPageId(page._id)
-                }
-                className={`flex w-full items-center gap-3 border-b px-5 py-4 text-left transition hover:bg-muted ${
-                  selectedPageId === page._id
-                    ? "bg-muted"
-                    : ""
-                }`}
-              >
-                <span className="text-xl">
-                  {page.icon}
-                </span>
-
-                <div className="flex-1">
-
-                  <h4 className="font-medium">
-                    {page.title}
-                  </h4>
-
-                  <p className="text-xs text-muted-foreground">
-                    Updated{" "}
-                    {new Date(
-                      page.updatedAt
-                    ).toLocaleDateString()}
-                  </p>
-
+              <div className="mt-10 rounded-2xl border bg-card p-6 text-left shadow-sm">
+                <div className="mb-4 flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  <span className="font-semibold">
+                    What you can do
+                  </span>
                 </div>
 
-                <FileText className="h-4 w-4 text-muted-foreground" />
-
-              </button>
-            ))
-          )}
-
-        </div>
-
-      </div>
-
-      {/* Right Side */}
-
-      <div className="flex flex-1 items-center justify-center">
-
-        {selectedPageId ? (
-          <div className="text-center">
-
-            <h2 className="text-2xl font-semibold">
-              Editor Coming Next
-            </h2>
-
-            <p className="mt-2 text-muted-foreground">
-              We'll integrate the rich text editor here.
-            </p>
-
-          </div>
-        ) : (
-          <div className="text-center">
-
-            <FileText className="mx-auto mb-5 h-12 w-12 text-muted-foreground" />
-
-            <h2 className="text-xl font-semibold">
-              Select a Page
-            </h2>
-
-            <p className="mt-2 text-muted-foreground">
-              Choose a page from the left or create a new one.
-            </p>
-
+                <ul className="space-y-3 text-sm text-muted-foreground">
+                  <li>• Organize documents into Spaces</li>
+                  <li>• Write rich notes with the editor</li>
+                  <li>• Keep meeting notes and documentation</li>
+                  <li>• Favorite and archive important pages</li>
+                  <li>• Autosave your work instantly</li>
+                </ul>
+              </div>
+            </div>
           </div>
         )}
-
       </div>
-<CreatePageModal />
-    </div>
+
+      <CreatePageModal />
+    </>
   );
 }

@@ -71,7 +71,7 @@ export const menuGroups: MenuGroup[] = [
       },
       {
         label: "Pages / Spaces",
-        href: "/spaces",
+        href: "/pages",
         icon: Library,
         color: "text-cyan-300",
       },
