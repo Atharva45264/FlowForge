@@ -3,6 +3,7 @@
 import { Clock, Star } from "lucide-react";
 
 import { Page } from "@/hooks/usePages";
+import PageActions from "./PageActions";
 
 interface Props {
   page: Page;
@@ -16,9 +17,9 @@ export default function PageItem({
   onClick,
 }: Props) {
   return (
-    <button
+    <div
       onClick={onClick}
-      className={`group flex w-full items-center justify-between rounded-xl border p-4 transition-all duration-200 ${
+      className={`group flex cursor-pointer items-center justify-between rounded-xl border p-4 transition-all duration-200 ${
         selected
           ? "border-primary bg-primary/10"
           : "hover:border-primary/40 hover:bg-muted/40"
@@ -30,7 +31,7 @@ export default function PageItem({
           {page.icon}
         </div>
 
-        <div className="text-left">
+        <div>
 
           <h3 className="font-medium">
             {page.title}
@@ -40,7 +41,9 @@ export default function PageItem({
 
             <Clock className="h-3.5 w-3.5" />
 
-            {new Date(page.updatedAt).toLocaleDateString()}
+            {new Date(
+              page.updatedAt
+            ).toLocaleDateString()}
 
           </div>
 
@@ -48,11 +51,16 @@ export default function PageItem({
 
       </div>
 
-      {page.favorite && (
-        <Star
-          className="h-4 w-4 fill-yellow-400 text-yellow-400"
-        />
-      )}
-    </button>
+      <div className="flex items-center gap-2">
+
+        {page.favorite && (
+          <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+        )}
+
+        <PageActions page={page} />
+
+      </div>
+
+    </div>
   );
 }

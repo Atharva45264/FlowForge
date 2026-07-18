@@ -133,6 +133,18 @@ export function usePages(spaceId?: string) {
   });
 }
 
+async function duplicatePage(id: string) {
+  const res = await fetch(`/api/pages/${id}/duplicate`, {
+    method: "POST",
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to duplicate page");
+  }
+
+  return res.json();
+}
+
 export function usePage(id: string) {
   return useQuery({
     queryKey: ["page", id],
@@ -180,6 +192,24 @@ export function useArchivePage() {
 
   return useMutation({
     mutationFn: archivePage,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["pages"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["spaces"],
+      });
+    },
+  });
+}
+
+export function useDuplicatePage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: duplicatePage,
+
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["pages"],
