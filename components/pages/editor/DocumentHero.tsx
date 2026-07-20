@@ -4,13 +4,15 @@ import { useMemo, useState } from "react";
 
 import {
   Camera,
-  SmilePlus,
   CheckCircle2,
   Loader2,
+  Share2,
   Star,
   StarOff,
-  Share2,
+  Download,
 } from "lucide-react";
+
+import ShareDialog from "../ShareDialog";
 
 import { Button } from "@/components/ui/button";
 
@@ -19,6 +21,7 @@ import { PAGE_COVERS } from "@/lib/page-covers";
 
 import CoverPicker from "./CoverPicker";
 import EmojiPicker from "./EmojiPicker";
+import ExportDialog from "../ExportDialog";
 
 interface Props {
   page: Page;
@@ -37,6 +40,12 @@ export default function DocumentHero({
   const [showEmojiPicker, setShowEmojiPicker] =
     useState(false);
 
+  const [exportOpen, setExportOpen] =
+    useState(false);
+
+const [shareOpen, setShareOpen] =
+  useState(false);
+
   const currentCover = useMemo(() => {
     return (
       PAGE_COVERS.find(
@@ -51,7 +60,7 @@ export default function DocumentHero({
       {/* Cover */}
 
       <div
-        className={`relative h-56 rounded-b-3xl bg-linear-to-r ${currentCover.className}`}
+        className={`relative h-44 rounded-b-3xl bg-linear-to-r ${currentCover.className}`}
       >
         <div className="absolute right-5 top-5">
 
@@ -63,7 +72,6 @@ export default function DocumentHero({
             }
           >
             <Camera className="mr-2 h-4 w-4" />
-
             Change Cover
           </Button>
 
@@ -88,9 +96,11 @@ export default function DocumentHero({
         </div>
       )}
 
-      <div className="relative -mt-12 px-10 pb-6">
+      <div className="relative -mt-10 px-10 pb-6">
 
         <div className="flex items-end justify-between">
+
+          {/* Emoji */}
 
           <div>
 
@@ -98,13 +108,13 @@ export default function DocumentHero({
               onClick={() =>
                 setShowEmojiPicker((prev) => !prev)
               }
-              className="flex h-24 w-24 items-center justify-center rounded-3xl border bg-background text-6xl shadow-lg transition hover:scale-105"
+              className="flex h-20 w-20 items-center justify-center rounded-3xl border bg-background text-5xl shadow-lg transition hover:scale-105"
             >
               {page.emoji}
             </button>
 
             {showEmojiPicker && (
-              <div className="absolute left-10 top-24 z-50">
+              <div className="absolute left-10 top-20 z-50">
                 <EmojiPicker
                   value={page.emoji}
                   onChange={(emoji) => {
@@ -124,15 +134,26 @@ export default function DocumentHero({
 
           </div>
 
+          {/* Actions */}
+
           <div className="flex items-center gap-2">
+
+            <Button
+  variant="outline"
+  className="rounded-xl"
+  onClick={() => setShareOpen(true)}
+>
+  <Share2 className="mr-2 h-4 w-4" />
+  Share
+</Button>
 
             <Button
               variant="outline"
               className="rounded-xl"
+              onClick={() => setExportOpen(true)}
             >
-              <Share2 className="mr-2 h-4 w-4" />
-
-              Share
+              <Download className="mr-2 h-4 w-4" />
+              Export
             </Button>
 
             <Button
@@ -159,7 +180,9 @@ export default function DocumentHero({
 
         </div>
 
-        <div className="mt-6 flex items-center gap-5 text-sm text-muted-foreground">
+        {/* Status */}
+
+        <div className="mt-5 flex items-center gap-5 text-sm text-muted-foreground">
 
           {saving ? (
             <>
@@ -183,6 +206,18 @@ export default function DocumentHero({
         </div>
 
       </div>
+
+      <ExportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        page={page}
+      />
+
+      <ShareDialog
+  open={shareOpen}
+  onOpenChange={setShareOpen}
+  page={page}
+/>
 
     </div>
   );

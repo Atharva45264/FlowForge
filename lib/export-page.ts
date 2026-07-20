@@ -1,8 +1,8 @@
-import html2pdf from "html2pdf.js";
-
 import { Page } from "@/hooks/usePages";
 
 export async function exportAsHTML(page: Page) {
+  if (typeof window === "undefined") return;
+
   const blob = new Blob([page.content], {
     type: "text/html",
   });
@@ -11,7 +11,8 @@ export async function exportAsHTML(page: Page) {
 }
 
 export async function exportAsMarkdown(page: Page) {
-  // Simple HTML → Markdown conversion
+  if (typeof window === "undefined") return;
+
   const markdown = page.content
     .replace(/<h1>/g, "# ")
     .replace(/<\/h1>/g, "\n")
@@ -21,7 +22,7 @@ export async function exportAsMarkdown(page: Page) {
     .replace(/<\/strong>/g, "**")
     .replace(/<em>/g, "*")
     .replace(/<\/em>/g, "*")
-    .replace(/<br>/g, "\n")
+    .replace(/<br\s*\/?>/g, "\n")
     .replace(/<[^>]+>/g, "");
 
   const blob = new Blob([markdown], {
@@ -32,13 +33,23 @@ export async function exportAsMarkdown(page: Page) {
 }
 
 export async function exportAsPDF(page: Page) {
+  if (typeof window === "undefined") return;
+
+  // Dynamically import only in browser
+  const html2pdf = (await import("html2pdf.js")).default;
+
   const element = document.createElement("div");
 
   element.style.padding = "40px";
+  element.style.fontFamily = "Arial, sans-serif";
+  element.style.background = "white";
+  element.style.color = "black";
+
   element.innerHTML = `
-      <h1>${page.title}</h1>
-      ${page.content}
-    `;
+    <h1>${page.title}</h1>
+    <hr/>
+    ${page.content}
+  `;
 
   await html2pdf()
     .set({
@@ -66,10 +77,11 @@ function download(blob: Blob, filename: string) {
   const a = document.createElement("a");
 
   a.href = url;
-
   a.download = filename;
 
+  document.body.appendChild(a);
   a.click();
+  a.remove();
 
   URL.revokeObjectURL(url);
 }

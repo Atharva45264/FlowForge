@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import {
   Search,
   Star,
@@ -9,19 +11,19 @@ import {
   FolderOpen,
   ChevronDown,
   ChevronRight,
-  FileText,
 } from "lucide-react";
 
 import { useSpaces } from "@/hooks/useSpaces";
 import { usePagesBySpace } from "@/hooks/usePages";
 import { usePageStore } from "@/store/pageStore";
-import { useState } from "react";
+
+import PageItem from "./PageItem";
 
 export default function PageSidebar() {
   const { data: spaces = [], isLoading } = useSpaces();
 
   const [expandedSpace, setExpandedSpace] =
-  useState<string | null>(null);
+    useState<string | null>(null);
 
   const {
     selectedSpaceId,
@@ -34,20 +36,22 @@ export default function PageSidebar() {
   } = usePageStore();
 
   return (
-    <aside className="w-72 border-r bg-background flex flex-col">
+    <aside className="flex w-72 flex-col border-r bg-background">
 
       {/* Header */}
+
       <div className="border-b p-5">
         <h2 className="text-xl font-bold">
           Pages & Spaces
         </h2>
 
-        <p className="text-sm text-muted-foreground mt-1">
+        <p className="mt-1 text-sm text-muted-foreground">
           Organize your notes and documents
         </p>
       </div>
 
       {/* Search */}
+
       <div className="p-4">
 
         <div className="relative">
@@ -71,43 +75,51 @@ export default function PageSidebar() {
       </div>
 
       {/* Filters */}
-      <div className="px-3 space-y-1">
+
+      <div className="space-y-1 px-3">
 
         <SidebarButton
           active={activeFilter === "favorites"}
           icon={<Star size={18} />}
           label="Favorites"
-          onClick={() => setActiveFilter("favorites")}
+          onClick={() =>
+            setActiveFilter("favorites")
+          }
         />
 
         <SidebarButton
           active={activeFilter === "recent"}
           icon={<Clock3 size={18} />}
           label="Recently Opened"
-          onClick={() => setActiveFilter("recent")}
+          onClick={() =>
+            setActiveFilter("recent")
+          }
         />
 
         <SidebarButton
           active={activeFilter === "archived"}
           icon={<Archive size={18} />}
           label="Archived"
-          onClick={() => setActiveFilter("archived")}
+          onClick={() =>
+            setActiveFilter("archived")
+          }
         />
 
       </div>
 
       {/* Spaces */}
+
       <div className="mt-6 flex-1 overflow-y-auto">
 
-        <div className="flex items-center justify-between px-4 mb-3">
+        <div className="mb-3 flex items-center justify-between px-4">
 
-          <h3 className="text-xs font-semibold tracking-wider text-muted-foreground uppercase">
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Spaces
           </h3>
 
           <button
             onClick={() => setCreateSpaceOpen(true)}
-            className="rounded-md p-1 hover:bg-muted transition"
+            className="rounded-md p-1 transition hover:bg-muted"
           >
             <Plus size={16} />
           </button>
@@ -126,17 +138,21 @@ export default function PageSidebar() {
           <div className="space-y-1 px-2">
 
             {spaces.map((space) => (
-  <SpaceItem
-    key={space._id}
-    space={space}
-    expanded={expandedSpace === space._id}
-    onToggle={() =>
-      setExpandedSpace((prev) =>
-        prev === space._id ? null : space._id
-      )
-    }
-  />
-))}
+              <SpaceItem
+                key={space._id}
+                space={space}
+                expanded={
+                  expandedSpace === space._id
+                }
+                onToggle={() =>
+                  setExpandedSpace((prev) =>
+                    prev === space._id
+                      ? null
+                      : space._id
+                  )
+                }
+              />
+            ))}
 
           </div>
         )}
@@ -144,11 +160,14 @@ export default function PageSidebar() {
       </div>
 
       {/* Footer */}
+
       <div className="border-t p-4">
 
         <button
-          onClick={() => setSelectedSpaceId(null)}
-          className="flex w-full items-center gap-2 rounded-lg border px-3 py-2 hover:bg-muted transition"
+          onClick={() =>
+            setSelectedSpaceId(null)
+          }
+          className="flex w-full items-center gap-2 rounded-lg border px-3 py-2 transition hover:bg-muted"
         >
           <FolderOpen size={18} />
 
@@ -215,6 +234,8 @@ function SpaceItem({
   return (
     <div className="rounded-xl">
 
+      {/* Space */}
+
       <button
         onClick={() => {
           setSelectedSpaceId(space._id);
@@ -250,25 +271,22 @@ function SpaceItem({
 
       </button>
 
+      {/* Pages */}
+
       {expanded && (
-        <div className="ml-10 mt-1 space-y-1">
+        <div className="mt-2 ml-6 space-y-2">
 
           {pages.map((page: any) => (
-            <button
+            <PageItem
               key={page._id}
+              page={page}
+              selected={
+                selectedPageId === page._id
+              }
               onClick={() =>
                 setSelectedPageId(page._id)
               }
-              className={`flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition ${
-                selectedPageId === page._id
-                  ? "bg-muted font-medium"
-                  : "hover:bg-muted"
-              }`}
-            >
-              <FileText className="h-4 w-4" />
-
-              {page.title}
-            </button>
+            />
           ))}
 
         </div>

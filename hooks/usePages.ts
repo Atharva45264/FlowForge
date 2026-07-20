@@ -13,6 +13,9 @@ export interface Page {
   cover: string;
   content: string;
 
+  isPublic: boolean;
+shareId: string;
+
   tags: string[];
 
   favorite: boolean;
@@ -22,6 +25,13 @@ export interface Page {
 
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ShareResponse {
+  success: boolean;
+  isPublic: boolean;
+  shareId: string;
+  shareUrl: string;
 }
 
 // ----------------------
@@ -177,6 +187,23 @@ async function movePage({
   return res.json();
 }
 
+async function toggleShare(
+  pageId: string
+): Promise<ShareResponse> {
+  const res = await fetch(
+    `/api/pages/${pageId}/share`,
+    {
+      method: "PATCH",
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to update sharing");
+  }
+
+  return res.json();
+}
+
 export function usePage(id: string) {
   return useQuery({
     queryKey: ["page", id],
@@ -293,5 +320,23 @@ export function usePagesBySpace(spaceId?: string) {
       return res.json();
     },
     enabled: !!spaceId,
+  });
+}
+
+export function useToggleShare() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: toggleShare,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["pages"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["page"],
+      });
+    },
   });
 }

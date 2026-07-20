@@ -11,6 +11,7 @@ import {
   Trash2,
   Star,
   StarOff,
+  Loader2,
 } from "lucide-react";
 
 import {
@@ -63,6 +64,10 @@ export default function PageActions({
     });
   }
 
+  const availableSpaces = spaces.filter(
+    (space) => space._id !== page.spaceId
+  );
+
   return (
     <>
       <DropdownMenu>
@@ -70,39 +75,47 @@ export default function PageActions({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
             onClick={(e) => e.stopPropagation()}
+            className="h-8 w-8 opacity-70 transition hover:opacity-100"
           >
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent align="end">
+        <DropdownMenuContent align="end" className="w-56">
 
           {/* Duplicate */}
 
           <DropdownMenuItem
-            onClick={duplicateCurrentPage}
             disabled={loading}
+            onClick={duplicateCurrentPage}
           >
-            <Copy className="mr-2 h-4 w-4" />
+            {loading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Copy className="mr-2 h-4 w-4" />
+            )}
+
             Duplicate
           </DropdownMenuItem>
 
           {/* Move */}
 
           <DropdownMenuSub>
+
             <DropdownMenuSubTrigger>
               <FolderInput className="mr-2 h-4 w-4" />
               Move to Space
             </DropdownMenuSubTrigger>
 
             <DropdownMenuSubContent>
-              {spaces
-                .filter(
-                  (space) => space._id !== page.spaceId
-                )
-                .map((space) => (
+
+              {availableSpaces.length === 0 ? (
+                <DropdownMenuItem disabled>
+                  No other spaces
+                </DropdownMenuItem>
+              ) : (
+                availableSpaces.map((space) => (
                   <DropdownMenuItem
                     key={space._id}
                     onClick={() =>
@@ -118,8 +131,11 @@ export default function PageActions({
 
                     {space.name}
                   </DropdownMenuItem>
-                ))}
+                ))
+              )}
+
             </DropdownMenuSubContent>
+
           </DropdownMenuSub>
 
           {/* Export */}
@@ -171,7 +187,7 @@ export default function PageActions({
 
           <DropdownMenuItem
             disabled
-            className="text-red-500"
+            className="text-red-500 focus:text-red-500"
           >
             <Trash2 className="mr-2 h-4 w-4" />
             Delete
@@ -179,8 +195,6 @@ export default function PageActions({
 
         </DropdownMenuContent>
       </DropdownMenu>
-
-      {/* Export Dialog */}
 
       <ExportDialog
         open={exportOpen}

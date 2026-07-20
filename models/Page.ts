@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
+import crypto from "crypto";
 
 export interface IPage extends Document {
   userId: string;
@@ -16,6 +17,10 @@ export interface IPage extends Document {
 
   favorite: boolean;
   archived: boolean;
+
+  // Sharing
+  isPublic: boolean;
+  shareId: string;
 
   lastOpenedAt?: Date;
 
@@ -80,6 +85,19 @@ const PageSchema = new Schema<IPage>(
     archived: {
       type: Boolean,
       default: false,
+    },
+
+    // Public Sharing
+    isPublic: {
+      type: Boolean,
+      default: false,
+    },
+
+    shareId: {
+      type: String,
+      unique: true,
+      index: true,
+      default: () => crypto.randomUUID(),
     },
 
     lastOpenedAt: {
