@@ -9,6 +9,8 @@ export interface Page {
 
   title: string;
   icon: string;
+  emoji: string;
+  cover: string;
   content: string;
 
   tags: string[];
@@ -62,6 +64,8 @@ async function createPage(data: {
   spaceId: string;
   title: string;
   icon?: string;
+  emoji?: string;
+  cover?: string;
   content?: string;
   tags?: string[];
 }) {
@@ -145,6 +149,34 @@ async function duplicatePage(id: string) {
   return res.json();
 }
 
+// ----------------------
+// Move Page
+// ----------------------
+
+async function movePage({
+  id,
+ spaceId,
+}: {
+  id: string;
+  spaceId: string;
+}) {
+  const res = await fetch(`/api/pages/${id}/move`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      spaceId,
+    }),
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to move page");
+  }
+
+  return res.json();
+}
+
 export function usePage(id: string) {
   return useQuery({
     queryKey: ["page", id],
@@ -175,11 +207,15 @@ export function useUpdatePage() {
 
   return useMutation({
     mutationFn: updatePage,
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ["page", variables.id],
-      });
 
+    onSuccess: (updatedPage) => {
+      // Update single page cache immediately
+      queryClient.setQueryData(
+        ["page", updatedPage._id],
+        updatedPage
+      );
+
+      // Refresh page lists
       queryClient.invalidateQueries({
         queryKey: ["pages"],
       });
@@ -209,6 +245,28 @@ export function useDuplicatePage() {
 
   return useMutation({
     mutationFn: duplicatePage,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["pages"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["spaces"],
+      });
+    },
+  });
+}
+
+// ======================
+// Move Page Hook
+// ======================
+
+export function useMovePage() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: movePage,
 
     onSuccess: () => {
       queryClient.invalidateQueries({

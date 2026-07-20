@@ -18,6 +18,8 @@ import { Loader2 } from "lucide-react";
 
 import EditorToolbar from "./EditorToolbar";
 import EditorHeader from "./EditorHeader";
+import DocumentHero from "./DocumentHero";
+import EditorStats from "./EditorStats";
 
 import {
   usePage,
@@ -36,6 +38,9 @@ export default function PageEditor({
   const updatePage = useUpdatePage();
 
   const [saving, setSaving] = useState(false);
+
+  // Live HTML for EditorStats
+  const [editorHtml, setEditorHtml] = useState("");
 
   const saveTimeout = useRef<NodeJS.Timeout | null>(null);
 
@@ -70,13 +75,16 @@ export default function PageEditor({
     onUpdate({ editor }) {
       if (!page) return;
 
+      const html = editor.getHTML();
+
+      // Update live stats
+      setEditorHtml(html);
+
       if (saveTimeout.current) {
         clearTimeout(saveTimeout.current);
       }
 
       saveTimeout.current = setTimeout(() => {
-        const html = editor.getHTML();
-
         if (html === page.content) return;
 
         setSaving(true);
@@ -102,6 +110,9 @@ export default function PageEditor({
     if (!editor || !page) return;
 
     editor.commands.setContent(page.content || "");
+
+    // Initialize stats
+    setEditorHtml(page.content || "");
   }, [editor, page]);
 
   if (isLoading || !editor) {
@@ -115,8 +126,15 @@ export default function PageEditor({
   return (
     <div className="flex h-full flex-col bg-muted/20">
 
-      {/* Header */}
+      {/* Document Hero */}
+      {page && (
+        <DocumentHero
+          page={page}
+          saving={saving}
+        />
+      )}
 
+      {/* Page Header */}
       {page && (
         <div className="border-b bg-background">
           <EditorHeader
@@ -127,20 +145,18 @@ export default function PageEditor({
       )}
 
       {/* Sticky Toolbar */}
-
       <div className="sticky top-0 z-20 border-b bg-background/95 backdrop-blur">
         <EditorToolbar editor={editor} />
       </div>
 
       {/* Editor */}
-
       <div className="flex-1 overflow-y-auto">
-
         <div className="mx-auto max-w-6xl px-8 py-10">
 
-          <div className="rounded-3xl border bg-background shadow-sm">
+          <div className="rounded-3xl border bg-background shadow-sm overflow-hidden">
 
-            <div className="min-h-[calc(100vh-260px)] px-14 py-12">
+            {/* Editor Area */}
+            <div className="min-h-[calc(100vh-320px)] px-14 py-12">
 
               <EditorContent
                 editor={editor}
@@ -155,10 +171,12 @@ export default function PageEditor({
 
             </div>
 
+            {/* Live Statistics */}
+            <EditorStats html={editorHtml} />
+
           </div>
 
         </div>
-
       </div>
 
     </div>

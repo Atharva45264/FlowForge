@@ -19,11 +19,23 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
 
 import { Button } from "@/components/ui/button";
 
-import { Page, useUpdatePage, useDuplicatePage } from "@/hooks/usePages";
+import { useSpaces } from "@/hooks/useSpaces";
+
+import {
+  Page,
+  useDuplicatePage,
+  useMovePage,
+  useUpdatePage,
+} from "@/hooks/usePages";
+
+import ExportDialog from "./ExportDialog";
 
 interface Props {
   page: Page;
@@ -33,93 +45,148 @@ export default function PageActions({
   page,
 }: Props) {
   const updatePage = useUpdatePage();
+  const duplicate = useDuplicatePage();
+  const movePage = useMovePage();
+
+  const { data: spaces = [] } = useSpaces();
 
   const [loading, setLoading] = useState(false);
+  const [exportOpen, setExportOpen] = useState(false);
 
-  const duplicate = useDuplicatePage();
+  function duplicateCurrentPage() {
+    setLoading(true);
 
-function duplicateCurrentPage() {
-  duplicate.mutate(page._id);
-}
+    duplicate.mutate(page._id, {
+      onSettled() {
+        setLoading(false);
+      },
+    });
+  }
 
   return (
-    <DropdownMenu>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
 
-      <DropdownMenuTrigger asChild>
+        <DropdownMenuContent align="end">
 
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
+          {/* Duplicate */}
 
-      </DropdownMenuTrigger>
+          <DropdownMenuItem
+            onClick={duplicateCurrentPage}
+            disabled={loading}
+          >
+            <Copy className="mr-2 h-4 w-4" />
+            Duplicate
+          </DropdownMenuItem>
 
-      <DropdownMenuContent align="end">
+          {/* Move */}
 
-        <DropdownMenuItem
-          onClick={duplicateCurrentPage}
-          disabled={loading}
-        >
-          <Copy className="mr-2 h-4 w-4" />
-          Duplicate
-        </DropdownMenuItem>
+          <DropdownMenuSub>
+            <DropdownMenuSubTrigger>
+              <FolderInput className="mr-2 h-4 w-4" />
+              Move to Space
+            </DropdownMenuSubTrigger>
 
-        <DropdownMenuItem disabled>
-          <FolderInput className="mr-2 h-4 w-4" />
-          Move
-        </DropdownMenuItem>
+            <DropdownMenuSubContent>
+              {spaces
+                .filter(
+                  (space) => space._id !== page.spaceId
+                )
+                .map((space) => (
+                  <DropdownMenuItem
+                    key={space._id}
+                    onClick={() =>
+                      movePage.mutate({
+                        id: page._id,
+                        spaceId: space._id,
+                      })
+                    }
+                  >
+                    <span className="mr-2">
+                      {space.icon}
+                    </span>
 
-        <DropdownMenuItem disabled>
-          <Download className="mr-2 h-4 w-4" />
-          Export
-        </DropdownMenuItem>
+                    {space.name}
+                  </DropdownMenuItem>
+                ))}
+            </DropdownMenuSubContent>
+          </DropdownMenuSub>
 
-        <DropdownMenuSeparator />
+          {/* Export */}
 
-        <DropdownMenuItem
-          onClick={() =>
-            updatePage.mutate({
-              id: page._id,
-              data: {
-                favorite: !page.favorite,
-              },
-            })
-          }
-        >
-          {page.favorite ? (
-            <>
-              <StarOff className="mr-2 h-4 w-4" />
-              Remove Favorite
-            </>
-          ) : (
-            <>
-              <Star className="mr-2 h-4 w-4" />
-              Add Favorite
-            </>
-          )}
-        </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => setExportOpen(true)}
+          >
+            <Download className="mr-2 h-4 w-4" />
+            Export
+          </DropdownMenuItem>
 
-        <DropdownMenuItem disabled>
-          <Archive className="mr-2 h-4 w-4" />
-          Archive
-        </DropdownMenuItem>
+          <DropdownMenuSeparator />
 
-        <DropdownMenuSeparator />
+          {/* Favorite */}
 
-        <DropdownMenuItem
-          disabled
-          className="text-red-500"
-        >
-          <Trash2 className="mr-2 h-4 w-4" />
-          Delete
-        </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() =>
+              updatePage.mutate({
+                id: page._id,
+                data: {
+                  favorite: !page.favorite,
+                },
+              })
+            }
+          >
+            {page.favorite ? (
+              <>
+                <StarOff className="mr-2 h-4 w-4" />
+                Remove Favorite
+              </>
+            ) : (
+              <>
+                <Star className="mr-2 h-4 w-4" />
+                Add Favorite
+              </>
+            )}
+          </DropdownMenuItem>
 
-      </DropdownMenuContent>
+          {/* Archive */}
 
-    </DropdownMenu>
+          <DropdownMenuItem disabled>
+            <Archive className="mr-2 h-4 w-4" />
+            Archive
+          </DropdownMenuItem>
+
+          <DropdownMenuSeparator />
+
+          {/* Delete */}
+
+          <DropdownMenuItem
+            disabled
+            className="text-red-500"
+          >
+            <Trash2 className="mr-2 h-4 w-4" />
+            Delete
+          </DropdownMenuItem>
+
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+      {/* Export Dialog */}
+
+      <ExportDialog
+        open={exportOpen}
+        onOpenChange={setExportOpen}
+        page={page}
+      />
+    </>
   );
 }

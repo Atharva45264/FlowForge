@@ -5,7 +5,11 @@ export interface IPage extends Document {
   spaceId: mongoose.Types.ObjectId;
 
   title: string;
+
   icon: string;
+  emoji: string;
+  cover: string;
+
   content: string;
 
   tags: string[];
@@ -40,9 +44,22 @@ const PageSchema = new Schema<IPage>(
       trim: true,
     },
 
+    // Legacy icon (used in sidebar)
     icon: {
       type: String,
       default: "📄",
+    },
+
+    // Large emoji shown inside the page
+    emoji: {
+      type: String,
+      default: "📄",
+    },
+
+    // Gradient cover theme
+    cover: {
+      type: String,
+      default: "purple",
     },
 
     content: {
@@ -76,6 +93,7 @@ const PageSchema = new Schema<IPage>(
 );
 
 const Page: Model<IPage> =
-  mongoose.models.Page || mongoose.model<IPage>("Page", PageSchema);
+  mongoose.models.Page ||
+  mongoose.model<IPage>("Page", PageSchema);
 
 export default Page;
