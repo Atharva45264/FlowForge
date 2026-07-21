@@ -38,9 +38,7 @@ export default function useVoice() {
       setListening(false);
     };
 
-    recognition.onresult = (
-      event: SpeechRecognitionEvent
-    ) => {
+    recognition.onresult = (event: any) => {
       let text = "";
 
       for (

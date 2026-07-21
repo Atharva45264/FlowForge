@@ -20,8 +20,7 @@ export function NotesEditor() {
   const selectedNote = notes.find(
     (note) => note._id === selectedNoteId
   );
-console.log("Selected Note ID:", selectedNoteId);
-console.log("Selected Note:", selectedNote);
+
   return (
     <div
       className="

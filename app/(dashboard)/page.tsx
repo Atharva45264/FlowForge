@@ -4,7 +4,7 @@ import { HeroSection } from "@/components/dashboard/hero-section"
 import { WorkspaceCards } from "@/components/dashboard/workspace-cards"
 import { KanbanPreview } from "@/components/dashboard/kanban-preview"
 import { TodayPanel } from "@/components/dashboard/today-panel"
-import AILayout from "@/components/ai/ai-layout"
+import AILayout from "@/components/assistant/ai-layout"
 
 export default function DashboardPage() {
   return (

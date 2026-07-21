@@ -12,8 +12,7 @@ import { useNotesStore } from "@/store/notes-store";
 export function useCreateNote() {
   const queryClient = useQueryClient();
 
-  const { setSelectedNote } =
-    useNotesStore();
+  const { setSelectedNoteId } = useNotesStore();
 
   return useMutation({
     mutationFn: createNote,
@@ -23,7 +22,7 @@ export function useCreateNote() {
         queryKey: ["notes"],
       });
 
-      setSelectedNote(note);
+      setSelectedNoteId(note._id);
     },
   });
 }

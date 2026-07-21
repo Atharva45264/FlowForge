@@ -208,7 +208,7 @@ export function AIPanel() {
         </h2>
 
         <p className="text-sm text-slate-400">
-          Powered by Groq
+          Powered by Google Gemini
         </p>
 
       </div>
