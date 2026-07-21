@@ -1,3 +1,5 @@
-export default function Page() {
-  return <div>Coming Soon</div>
+import SettingsLayout from "@/components/settings/SettingsLayout";
+
+export default function SettingsPage() {
+  return <SettingsLayout />;
 }
