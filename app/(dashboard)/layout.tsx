@@ -1,5 +1,6 @@
 import { Sidebar } from "@/components/dashboard/sidebar"
 import { DashboardHeader } from "@/components/dashboard/dashboard-header"
+import DashboardBackground from "@/components/dashboard/dashboard-background";
 
 export default function DashboardLayout({
   children,
@@ -15,6 +16,7 @@ export default function DashboardLayout({
           <DashboardHeader />
 
           <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6">
+            <DashboardBackground />
             {children}
           </div>
         </section>

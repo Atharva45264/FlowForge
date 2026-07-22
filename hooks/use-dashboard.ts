@@ -26,6 +26,8 @@ export interface DashboardData {
     focusHours: number;
     completionRate: number;
   };
+
+  insight: string;
 }
 
 async function fetchDashboard(): Promise<DashboardData> {

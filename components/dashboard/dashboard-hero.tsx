@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useDashboard } from "@/hooks/use-dashboard";
+import AnimatedCounter from "@/components/ui/animated-counter";
 
 export default function DashboardHero() {
   const { data, isLoading } = useDashboard();
@@ -87,8 +88,8 @@ export default function DashboardHero() {
               <>
                 Your workspace currently contains{" "}
                 <span className="font-semibold text-white">
-                  {totalItems}
-                </span>{" "}
+  <AnimatedCounter value={totalItems} />
+</span>{" "}
                 active resources across all modules.
               </>
             )}
@@ -110,28 +111,28 @@ export default function DashboardHero() {
         <div className="grid grid-cols-2 gap-4 lg:w-95">
           <HeroStat
             title="Notes"
-            value={(data?.stats.notes ?? 0).toString()}
+            value={data?.stats.notes ?? 0}
             icon={<FileText className="h-5 w-5 text-white" />}
             color="from-emerald-500 to-green-500"
           />
 
           <HeroStat
             title="Pages"
-            value={(data?.stats.pages ?? 0).toString()}
+            value={data?.stats.pages ?? 0}
             icon={<Library className="h-5 w-5 text-white" />}
             color="from-sky-500 to-cyan-500"
           />
 
           <HeroStat
             title="Whiteboards"
-            value={(data?.stats.boards ?? 0).toString()}
+            value={data?.stats.boards ?? 0}
             icon={<PenTool className="h-5 w-5 text-white" />}
             color="from-pink-500 to-rose-500"
           />
 
           <HeroStat
             title="AI Chats"
-            value={(data?.stats.chats ?? 0).toString()}
+            value={data?.stats.chats ?? 0}
             icon={<Bot className="h-5 w-5 text-white" />}
             color="from-violet-500 to-indigo-500"
           />
@@ -148,7 +149,7 @@ function HeroStat({
   icon,
 }: {
   title: string;
-  value: string;
+  value: number;
   color: string;
   icon: React.ReactNode;
 }) {
@@ -170,8 +171,8 @@ function HeroStat({
       </div>
 
       <p className="text-3xl font-black text-white">
-        {value}
-      </p>
+  <AnimatedCounter value={value} />
+</p>
 
       <p className="mt-1 text-sm text-slate-400">
         {title}

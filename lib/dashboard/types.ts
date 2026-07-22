@@ -49,4 +49,6 @@ export interface DashboardResponse {
   recentActivity: DashboardActivity[];
 
   productivity: ProductivityMetrics;
+
+  insight: string;
 }

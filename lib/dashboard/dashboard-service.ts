@@ -5,6 +5,7 @@ import { getDashboardStats } from "./stats";
 import { getTodayEvents } from "./today";
 import { getRecentActivity } from "./activity";
 import { calculateProductivity } from "./productivity";
+import { generateDashboardInsight } from "./ai-insights";
 
 export async function getDashboardData(
   userId: string
@@ -25,12 +26,23 @@ export async function getDashboardData(
 
   const productivity = calculateProductivity(stats);
 
-  return {
-    stats,
-    today: {
-      events: todayEvents,
-    },
-    recentActivity,
-    productivity,
-  };
+const insight = await generateDashboardInsight({
+  notes: stats.notes,
+  pages: stats.pages,
+  boards: stats.boards,
+  chats: stats.chats,
+  architectProjects: stats.architectProjects,
+  eventsToday: stats.eventsToday,
+  productivityScore: productivity.score,
+});
+
+return {
+  stats,
+  today: {
+    events: todayEvents,
+  },
+  recentActivity,
+  productivity,
+  insight,
+};
 }

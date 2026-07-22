@@ -265,19 +265,21 @@ export default function InsightsPanel() {
           </div>
 
           <div className="mt-8 rounded-2xl border border-indigo-500/20 bg-linear-to-r from-indigo-500/10 to-violet-500/10 p-5">
-            <h4 className="flex items-center gap-2 font-semibold text-white">
-              <Brain className="h-5 w-5 text-violet-400" />
-              AI Recommendation
-            </h4>
+  <h4 className="flex items-center gap-2 font-semibold text-white">
+    <Brain className="h-5 w-5 text-violet-400" />
+    AI Workspace Insight
+  </h4>
 
-            <p className="mt-3 text-sm leading-7 text-slate-300">
-              {(productivity?.score ?? 0) >= 80
-                ? "Your workspace is well organized. Continue maintaining your notes, pages, and whiteboards to keep productivity high."
-                : (productivity?.score ?? 0) >= 50
-                ? "You're making good progress. Organizing documents and completing pending work will improve your workspace score."
-                : "Your workspace is just getting started. Create more notes, pages, whiteboards, and AI conversations to build a productive workflow."}
-            </p>
-          </div>
+  <p className="mt-3 text-sm leading-7 text-slate-300">
+    {isLoading ? (
+  <span className="animate-pulse text-slate-400">
+    Analyzing your workspace...
+  </span>
+) : (
+  data?.insight
+)}
+  </p>
+</div>
         </motion.div>
       </div>
     </section>
