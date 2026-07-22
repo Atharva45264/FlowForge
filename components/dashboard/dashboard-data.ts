@@ -29,11 +29,11 @@ export const menuGroups: MenuGroup[] = [
     label: "Workspace",
     items: [
       {
-        label: "Dashboard",
-        href: "/",
-        icon: LayoutDashboard,
-        color: "text-indigo-400",
-      },
+  label: "Dashboard",
+  href: "/workspace",
+  icon: LayoutDashboard,
+  color: "text-indigo-400",
+},
       {
         label: "AI Assistant",
         href: "/assistant",
