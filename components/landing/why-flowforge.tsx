@@ -2,11 +2,13 @@
 
 import { motion } from "framer-motion";
 import { MergingApp } from "./merging-app";
-import { FeatureOrbit } from "./feature-orbit";
 
-export function ReplaceApps() {
+export function WhyFlowForge() {
   return (
-    <section className="relative overflow-hidden py-32">
+    <section
+      id="why-flowforge"
+      className="relative overflow-hidden py-32"
+    >
       {/* Background Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.12),transparent_65%)]" />
 
@@ -52,11 +54,7 @@ export function ReplaceApps() {
           </p>
         </motion.div>
 
-        {/* Animated Merge */}
-
         <MergingApp />
-
-        {/* Bottom Text */}
 
         <motion.div
           initial={{ opacity: 0, y: 30 }}

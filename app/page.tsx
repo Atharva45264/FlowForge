@@ -4,7 +4,7 @@ import { FeatureGrid } from "@/components/landing/feature-grid";
 import { Stats } from "@/components/landing/stats";
 import { CTA } from "@/components/landing/cta";
 import { Footer } from "@/components/landing/footer";
-import { ReplaceApps } from "@/components/landing/replace-apps";
+import { WhyFlowForge } from "@/components/landing/why-flowforge";
 
 export default function LandingPage() {
   return (
@@ -13,7 +13,7 @@ export default function LandingPage() {
 
       <Hero />
 
-      <ReplaceApps />
+      <WhyFlowForge />
 
       <FeatureGrid />
 
