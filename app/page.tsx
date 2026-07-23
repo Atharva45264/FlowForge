@@ -1,10 +1,11 @@
 import { LandingNavbar } from "@/components/landing/navbar";
 import { Hero } from "@/components/landing/hero";
 import { FeatureGrid } from "@/components/landing/feature-grid";
-import { Stats } from "@/components/landing/stats";
 import { CTA } from "@/components/landing/cta";
 import { Footer } from "@/components/landing/footer";
 import { WhyFlowForge } from "@/components/landing/why-flowforge";
+import { Pricing } from "@/components/landing/pricing";
+import { FAQ } from "@/components/landing/faq";
 
 export default function LandingPage() {
   return (
@@ -17,7 +18,9 @@ export default function LandingPage() {
 
       <FeatureGrid />
 
-      <Stats />
+      <Pricing />
+
+      <FAQ />
 
       <CTA />
 

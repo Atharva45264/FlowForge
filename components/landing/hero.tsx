@@ -13,7 +13,9 @@ import { Particles } from "./particles";
 
 export function Hero() {
   return (
-    <section className="relative overflow-hidden">
+    <section 
+    id="home"
+    className="relative overflow-hidden">
       <MouseSpotlight />
       <Particles />
       <AuroraBackground />
