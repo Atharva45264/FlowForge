@@ -1,8 +1,8 @@
 import { LandingNavbar } from "@/components/landing/layout/navbar";
-import { Hero } from "@/components/landing/hero";
+import { Hero } from "@/components/landing/hero/hero";
 import { FeatureGrid } from "@/components/landing/features/feature-grid";
 import { CTA } from "@/components/landing/cta/cta";
-import { Footer } from "@/components/landing/footer";
+import { Footer } from "@/components/landing/layout/footer";
 import { WhyFlowForge } from "@/components/landing/why/why-flowforge";
 import { Pricing } from "@/components/landing/pricing/pricing";
 import { FAQ } from "@/components/landing/faq/faq";
