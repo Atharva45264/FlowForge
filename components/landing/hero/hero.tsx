@@ -3,13 +3,13 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Play, Sparkles } from "lucide-react";
 
-import { AuroraBackground } from "./aurora-background";
-import { AnimatedGrid } from "./animated-grid";
+import { AuroraBackground } from "../shared/aurora-background";
+import { AnimatedGrid } from "../hero/animated-grid";
 import { WorkspacePreview }
-from "./workspace-preview";
-import { MagneticButton } from "./magnetic-button";
-import { MouseSpotlight } from "./mouse-spotlight";
-import { Particles } from "./particles";
+from "../why/workspace-preview";
+import { MagneticButton } from "../hero/magnetic-button";
+import { MouseSpotlight } from "../features/mouse-spotlight";
+import { Particles } from "../hero/particles";
 
 export function Hero() {
   return (

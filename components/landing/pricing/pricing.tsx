@@ -80,7 +80,7 @@ export function Pricing() {
 
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.10),transparent_65%)]" />
 
-      <div className="absolute left-1/2 top-40 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-violet-500/10 blur-[140px]" />
+      <div className="absolute left-1/2 top-40 h-125 w-125 -translate-x-1/2 rounded-full bg-violet-500/10 blur-[140px]" />
 
       <div className="relative mx-auto max-w-7xl px-6">
 
@@ -100,7 +100,7 @@ export function Pricing() {
           <h2 className="mt-6 text-5xl font-black lg:text-6xl">
             Choose the
 
-            <span className="bg-gradient-to-r from-violet-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-violet-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
               {" "}
               Perfect Plan
             </span>
@@ -136,25 +136,25 @@ export function Pricing() {
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute -inset-1 rounded-[30px] bg-gradient-to-r from-violet-600 via-indigo-500 to-cyan-500 opacity-40 blur-2xl transition-all duration-500 group-hover:opacity-70" />
+                  <div className="absolute -inset-1 rounded-[30px] bg-linear-to-r from-violet-600 via-indigo-500 to-cyan-500 opacity-40 blur-2xl transition-all duration-500 group-hover:opacity-70" />
                 )}
 
                 <div
                   className={`relative h-full overflow-hidden rounded-3xl border transition-all duration-500 ${
                     plan.popular
-                      ? "border-violet-500/60 bg-gradient-to-b from-violet-500/10 to-slate-900"
+                      ? "border-violet-500/60 bg-linear-to-b from-violet-500/10 to-slate-900"
                       : "border-white/10 bg-slate-900/60 backdrop-blur-xl group-hover:border-violet-500/40"
                   }`}
                 >
                   {plan.popular && (
-                    <div className="absolute right-5 top-5 rounded-full bg-gradient-to-r from-violet-600 to-cyan-500 px-4 py-1 text-xs font-semibold text-white shadow-lg">
+                    <div className="absolute right-5 top-5 rounded-full bg-linear-to-r from-violet-600 to-cyan-500 px-4 py-1 text-xs font-semibold text-white shadow-lg">
                       ⭐ Recommended
                     </div>
                   )}
 
                   <div className="p-8">
 
-                    <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-500/20 to-cyan-500/20">
+                    <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-linear-to-br from-violet-500/20 to-cyan-500/20">
                       <Icon className="h-8 w-8 text-cyan-400" />
                     </div>
 
@@ -171,7 +171,7 @@ export function Pricing() {
                       <span
                         className={`text-5xl font-black ${
                           plan.popular
-                            ? "bg-gradient-to-r from-violet-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent"
+                            ? "bg-linear-to-r from-violet-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent"
                             : ""
                         }`}
                       >
@@ -189,7 +189,7 @@ export function Pricing() {
                     <button
                       className={`mt-8 w-full rounded-2xl py-3 font-semibold transition-all duration-300 ${
                         plan.popular
-                          ? "bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-500 text-white shadow-lg shadow-violet-500/30 hover:scale-[1.02]"
+                          ? "bg-linear-to-r from-violet-600 via-indigo-600 to-cyan-500 text-white shadow-lg shadow-violet-500/30 hover:scale-[1.02]"
                           : "border border-white/10 bg-white/5 text-white hover:border-violet-500/40 hover:bg-white/10"
                       }`}
                     >

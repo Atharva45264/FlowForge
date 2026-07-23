@@ -49,7 +49,7 @@ export function FAQ() {
 
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.08),transparent_65%)]" />
 
-      <div className="absolute left-1/2 top-32 h-[450px] w-[450px] -translate-x-1/2 rounded-full bg-violet-500/10 blur-[130px]" />
+      <div className="absolute left-1/2 top-32 h-112.5 w-112.5 -translate-x-1/2 rounded-full bg-violet-500/10 blur-[130px]" />
 
       <div className="relative mx-auto max-w-5xl px-6">
 
@@ -68,7 +68,7 @@ export function FAQ() {
 
           <h2 className="mt-6 text-5xl font-black lg:text-6xl">
             Frequently Asked{" "}
-            <span className="bg-gradient-to-r from-violet-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-violet-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
               Questions
             </span>
           </h2>
@@ -170,7 +170,7 @@ export function FAQ() {
           transition={{
             delay: 0.3,
           }}
-          className="mt-20 rounded-3xl border border-violet-500/20 bg-gradient-to-br from-violet-500/10 to-cyan-500/5 p-10 text-center backdrop-blur-xl"
+          className="mt-20 rounded-3xl border border-violet-500/20 bg-linear-to-br from-violet-500/10 to-cyan-500/5 p-10 text-center backdrop-blur-xl"
         >
           <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-500/15">
             <MessageCircle className="h-8 w-8 text-cyan-400" />
@@ -189,7 +189,7 @@ export function FAQ() {
   href="https://www.linkedin.com/in/YOUR-LINKEDIN"
   target="_blank"
   rel="noopener noreferrer"
-  className="mt-8 inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-500 px-8 py-3 font-semibold text-white shadow-lg shadow-violet-500/30 transition-all duration-300 hover:scale-105 hover:shadow-violet-500/50"
+  className="mt-8 inline-flex items-center justify-center rounded-2xl bg-linear-to-r from-violet-600 via-indigo-600 to-cyan-500 px-8 py-3 font-semibold text-white shadow-lg shadow-violet-500/30 transition-all duration-300 hover:scale-105 hover:shadow-violet-500/50"
 >
   Let's Connect
 </a>

@@ -1,10 +1,10 @@
 "use client";
 
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
-import { AITyping } from "./ai-typing";
+import { AITyping } from "../hero/ai-typing";
 import { useRef } from "react";
-import { KanbanPreview } from "./kanban-preview";
-import { LiveActivity } from "./live-activity";
+import { KanbanPreview } from "../why/kanban-preview";
+import { LiveActivity } from "../why/live-activity";
 import {
   BrainCircuit,
   CalendarDays,

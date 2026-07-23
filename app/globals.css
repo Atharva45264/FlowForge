@@ -262,3 +262,7 @@
 .ProseMirror hr {
   margin: 2rem 0;
 }
+
+html {
+  scroll-behavior: smooth;
+}

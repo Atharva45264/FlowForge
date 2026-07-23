@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-import { AppsCluster } from "./apps-cluster";
-import { Explosion } from "./explosion";
-import { FlowForgeCard } from "./flowforge-card";
-import { FeatureOrbit } from "./feature-orbit";
+import { AppsCluster } from "../why/apps-cluster";
+import { Explosion } from "../hero/explosion";
+import { FlowForgeCard } from "../why/flowforge-card";
+import { FeatureOrbit } from "../why/feature-orbit";
 
 export function MergingApp() {
   const [merge, setMerge] = useState(false);

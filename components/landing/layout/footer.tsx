@@ -58,7 +58,7 @@ export function Footer() {
 
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.08),transparent_65%)]" />
 
-      <div className="absolute left-1/2 top-0 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-violet-500/10 blur-[130px]" />
+      <div className="absolute left-1/2 top-0 h-105 w-105 -translate-x-1/2 rounded-full bg-violet-500/10 blur-[130px]" />
 
       <div className="relative mx-auto max-w-7xl px-6">
         {/* Top */}
@@ -72,7 +72,7 @@ export function Footer() {
             viewport={{ once: true }}
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-cyan-500">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-linear-to-br from-violet-600 to-cyan-500">
                 <Sparkles className="h-6 w-6 text-white" />
               </div>
 

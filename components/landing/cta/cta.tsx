@@ -39,7 +39,7 @@ export function CTA() {
 
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.18),transparent_65%)]" />
 
-      <div className="absolute left-1/2 top-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-500/10 blur-[150px]" />
+      <div className="absolute left-1/2 top-1/2 h-150 w-150 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-500/10 blur-[150px]" />
 
       <div className="absolute -left-32 top-20 h-72 w-72 rounded-full bg-cyan-500/10 blur-[120px]" />
 
@@ -51,7 +51,7 @@ export function CTA() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.7 }}
-          className="overflow-hidden rounded-[40px] border border-white/10 bg-gradient-to-b from-slate-900/80 to-slate-950/90 p-10 backdrop-blur-xl md:p-16"
+          className="overflow-hidden rounded-[40px] border border-white/10 bg-linear-to-b from-slate-900/80 to-slate-950/90 p-10 backdrop-blur-xl md:p-16"
         >
           {/* Floating Badge */}
 
@@ -83,7 +83,7 @@ export function CTA() {
           >
             Ready to Forge
 
-            <span className="block bg-gradient-to-r from-violet-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
+            <span className="block bg-linear-to-r from-violet-400 via-cyan-400 to-indigo-400 bg-clip-text text-transparent">
               Your Next Workspace?
             </span>
           </motion.h2>
@@ -113,7 +113,7 @@ export function CTA() {
           >
             <Link
               href="/dashboard"
-              className="group inline-flex items-center gap-3 rounded-2xl bg-gradient-to-r from-violet-600 via-indigo-600 to-cyan-500 px-8 py-4 text-lg font-semibold text-white shadow-xl shadow-violet-500/30 transition-all duration-300 hover:scale-105 hover:shadow-violet-500/50"
+              className="group inline-flex items-center gap-3 rounded-2xl bg-linear-to-r from-violet-600 via-indigo-600 to-cyan-500 px-8 py-4 text-lg font-semibold text-white shadow-xl shadow-violet-500/30 transition-all duration-300 hover:scale-105 hover:shadow-violet-500/50"
             >
               Start Building Free
 
@@ -138,7 +138,7 @@ export function CTA() {
                   key={feature.label}
                   className="rounded-2xl border border-white/10 bg-white/5 p-5 transition-all duration-300 hover:border-violet-500/30 hover:bg-white/10"
                 >
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500/20 to-cyan-500/20">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-violet-500/20 to-cyan-500/20">
                     <Icon className="h-6 w-6 text-cyan-400" />
                   </div>
 

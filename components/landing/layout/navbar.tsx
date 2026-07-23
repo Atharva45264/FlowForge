@@ -155,7 +155,7 @@ export function LandingNavbar() {
         {label}
 
         <span
-          className={`absolute -bottom-1 left-0 h-0.5 rounded-full bg-gradient-to-r from-indigo-500 via-violet-500 to-cyan-400 transition-all duration-300 ${
+          className={`absolute -bottom-1 left-0 h-0.5 rounded-full bg-linear-to-r from-indigo-500 via-violet-500 to-cyan-400 transition-all duration-300 ${
             active
               ? "w-full"
               : "w-0 group-hover:w-full"
@@ -197,7 +197,7 @@ export function LandingNavbar() {
                 type: "spring",
                 stiffness: 300,
               }}
-              className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-violet-500 to-cyan-500 shadow-lg shadow-indigo-500/25"
+              className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-indigo-500 via-violet-500 to-cyan-500 shadow-lg shadow-indigo-500/25"
             >
               <Sparkles className="h-5 w-5 text-white" />
             </motion.div>
@@ -249,7 +249,7 @@ export function LandingNavbar() {
                 <>
                   <Link
                     href="/workspace"
-                    className="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40"
+                    className="group inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-indigo-600 via-violet-600 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40"
                   >
                     Open Workspace
 
@@ -267,7 +267,7 @@ export function LandingNavbar() {
                   </SignInButton>
 
                   <SignUpButton mode="modal">
-                    <button className="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40">
+                    <button className="group inline-flex items-center gap-2 rounded-xl bg-linear-to-r from-indigo-600 via-violet-600 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-500/25 transition-all duration-300 hover:scale-105 hover:shadow-indigo-500/40">
                       Start Free
 
                       <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
@@ -320,7 +320,7 @@ export function LandingNavbar() {
                       }
                       className={`flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left transition-all duration-300 ${
                         active
-                          ? "bg-gradient-to-r from-indigo-500/20 to-cyan-500/10 text-cyan-400"
+                          ? "bg-linear-to-r from-indigo-500/20 to-cyan-500/10 text-cyan-400"
                           : "text-slate-300 hover:bg-white/5 hover:text-white"
                       }`}
                     >
@@ -348,7 +348,7 @@ export function LandingNavbar() {
                     onClick={() =>
                       setMobileOpen(false)
                     }
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-5 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02]"
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-linear-to-r from-indigo-600 via-violet-600 to-cyan-500 px-5 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02]"
                   >
                     Open Workspace
 
@@ -368,7 +368,7 @@ export function LandingNavbar() {
                   </SignInButton>
 
                   <SignUpButton mode="modal">
-                    <button className="w-full rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-5 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02]">
+                    <button className="w-full rounded-2xl bg-linear-to-r from-indigo-600 via-violet-600 to-cyan-500 px-5 py-3 font-semibold text-white shadow-lg shadow-indigo-500/20 transition-all hover:scale-[1.02]">
                       Start Free
                     </button>
                   </SignUpButton>
