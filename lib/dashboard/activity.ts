@@ -68,7 +68,7 @@ export async function getRecentActivity(
       type: "board",
       title: board.title || "Untitled Whiteboard",
       updatedAt: board.updatedAt,
-      href: `/canvas/${board._id}`,
+      href: `/whiteboard/${board._id}`,
     })),
 
     ...events.map((event: any) => ({

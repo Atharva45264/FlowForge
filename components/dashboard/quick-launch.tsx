@@ -36,7 +36,7 @@ const actions = [
   {
     title: "New Canvas",
     description: "Visual brainstorming",
-    href: "/canvas",
+    href: "/whiteboard",
     icon: PenSquare,
     gradient: "from-pink-500 to-rose-500",
     status: "Ready",

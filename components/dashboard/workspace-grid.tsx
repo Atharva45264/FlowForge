@@ -124,7 +124,7 @@ export default function WorkspaceGrid() {
     {
       title: "Canvas",
       description: "Infinite Whiteboard",
-      href: "/canvas",
+      href: "/whiteboard",
       icon: PenTool,
       color: "from-pink-500 to-rose-500",
       bg: "bg-pink-500/10",

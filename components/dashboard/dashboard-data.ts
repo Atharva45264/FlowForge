@@ -65,7 +65,7 @@ export const menuGroups: MenuGroup[] = [
       },
       {
         label: "Canvas",
-        href: "/canvas",
+        href: "/whiteboard",
         icon: PenTool,
         color: "text-pink-400",
       },
